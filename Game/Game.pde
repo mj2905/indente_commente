@@ -1,6 +1,9 @@
+//Size of the plate
 private final int SIZE_X = 700, SIZE_Y = 20, SIZE_Z = 700;
 private final Plate plate = new Plate(SIZE_X, SIZE_Y, SIZE_Z);
+//Distance of camera
 private final int DEPTH = 800;
+//Speed, step of speed and limits for the rotation speed of the plate
 private float speed = 1.0;
 private final float STEP_OF_SPEED = 0.1, MIN_SPEED = 0.2, MAX_SPEED = 5;
 
