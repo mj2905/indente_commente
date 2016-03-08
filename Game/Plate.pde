@@ -5,12 +5,17 @@
 */
 
 public class Plate {
+  
+  //step of speed and limits for the rotation speed of the plate
+  private final float STEP_OF_SPEED = 0.1, MIN_SPEED = 0.2, MAX_SPEED = 5;
+  
   private final float sizeX;
   private final float sizeY;
   private final float sizeZ;
   private float rotationX;
   private float rotationY;
   private float rotationZ;
+  private float speed;
   
   public float getSizeX() {
      return sizeX; 
@@ -34,6 +39,10 @@ public class Plate {
   
   public float getRotZ() {
      return toDegrees(rotationZ); 
+  }
+  
+  public float getSpeed() {
+   return speed; 
   }
   
   public void setRotX(float rotX) {
@@ -60,6 +69,18 @@ public class Plate {
       }
   }
   
+  public void setSpeed(float speed) {
+     if(speed > MAX_SPEED) {
+       this.speed = MAX_SPEED;
+     }
+     else if(speed < MIN_SPEED) {
+       this.speed = MIN_SPEED;
+     }
+     else {
+       this.speed = speed; 
+     }
+  }
+  
   
   public Plate(float sizeX, float sizeY, float sizeZ) {
     this(sizeX, sizeY, sizeZ, 0,0);
@@ -72,6 +93,7 @@ public class Plate {
    setRotX(rotX);
    this.rotationY = 0;
    setRotZ(rotZ);
+   this.speed = 1;
   }
   
   private float toRadians(float angleInDegree) {
