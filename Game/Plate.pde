@@ -8,6 +8,7 @@ public class Plate {
   
   //step of speed and limits for the rotation speed of the plate
   private final float STEP_OF_SPEED = 0.1, MIN_SPEED = 0.2, MAX_SPEED = 5;
+  private final float MAX_ANGLE = 60, MIN_ANGLE = -60;
   
   private final float sizeX;
   private final float sizeY;
@@ -46,11 +47,11 @@ public class Plate {
   }
   
   public void setRotX(float rotX) {
-      if(rotX > 60) {
-        rotationX = toRadians(60);
+      if(rotX > MAX_ANGLE) {
+        rotationX = toRadians(MAX_ANGLE);
       }
-      else if(rotX < -60) {
-       rotationX = toRadians(-60); 
+      else if(rotX < MIN_ANGLE) {
+       rotationX = toRadians(MIN_ANGLE); 
       }
       else {
         rotationX = toRadians(rotX);
@@ -58,11 +59,11 @@ public class Plate {
   }
   
   public void setRotZ(float rotZ) {
-      if(rotZ > 60) {
-        rotationZ = toRadians(60);
+      if(rotZ > MAX_ANGLE) {
+        rotationZ = toRadians(MAX_ANGLE);
       }
-      else if(rotZ < -60) {
-       rotationZ = toRadians(-60); 
+      else if(rotZ < MIN_ANGLE) {
+       rotationZ = toRadians(MIN_ANGLE); 
       }
       else {
         rotationZ = toRadians(rotZ);
