@@ -9,7 +9,8 @@ public class Plate {
   //step of speed and limits for the rotation speed of the plate
   private final float STEP_OF_SPEED = 0.1, MIN_SPEED = 0.2, MAX_SPEED = 5;
   private final float MAX_ANGLE = 60, MIN_ANGLE = -60;
-  
+  private final float SPHERE_RADIUS = 30;
+  private final float MU = 0.1;
   private final float sizeX;
   private final float sizeY;
   private final float sizeZ;
@@ -17,6 +18,7 @@ public class Plate {
   private float rotationY;
   private float rotationZ;
   private float speed;
+  private final Sphere sphere = new Sphere(this, SPHERE_RADIUS);
   
   public float getSizeX() {
      return sizeX; 
@@ -44,6 +46,10 @@ public class Plate {
   
   public float getSpeed() {
    return speed; 
+  }
+  
+  public float getMu() {
+    return MU;
   }
   
   public void setRotX(float rotX) {
@@ -106,11 +112,15 @@ public class Plate {
   }
   
   public void render() {
+      pushMatrix();
       fill(133,123,227);
       rotateX(rotationX);
       rotateY(rotationY);
       rotateZ(rotationZ);
       box(sizeX,sizeY,sizeZ);
+      sphere.update();
+      sphere.render();
+      popMatrix();
   }
   
 }

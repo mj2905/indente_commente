@@ -3,7 +3,7 @@ private final int SIZE_X = 700, SIZE_Y = 20, SIZE_Z = 700;
 private final Plate plate = new Plate(SIZE_X, SIZE_Y, SIZE_Z);
 //Distance of camera
 private final int DEPTH = 800;
-
+private final float gravityConstant = 1;
 
 void settings() {
  fullScreen(P3D);
