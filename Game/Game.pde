@@ -21,15 +21,27 @@ void draw() {
   background(151, 185, 255);
   //translate(width/2, height/2, 0);
   
+  /*
+  Here, we discriminate against whether SHIFT is pressed, for academic purposes.
+  When shift is pressed, we set our plate to "upmode":
+    in upmode, the plate is drawn vertically and the sphere never updates and it is impossible to rotate the plate.
+    as such, it sort of simulates a pause (in order to avoid using noloop...)
+    The function plate.add(cylinder) is also enabled.
+  When SHIFT is released, we go back to "normal mode", the only changes being that we may now have a few cylinders.
+    possibility to rotate, and physics are back
+  */
+  
   if (keyPressed && keyCode == SHIFT) {
         camera(width/2, height/2, DEPTH, width/2, height/2, 0,0,1.0,0);
         translate(width/2, height/2, 0);
-        plate.noUpdateRender();
+        plate.upMode();
+        plate.render();
   }
   else {
       // changes to the camera in order to see better what we are doing when angleX>0
       camera(width/2, -height/8, DEPTH, width/2, height/2, 0,0,1.0,0); 
       translate(width/2, height/2, 0);
+      plate.normalMode();
       plate.render();
     }
 }
