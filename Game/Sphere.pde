@@ -46,26 +46,35 @@ public class Sphere {
   
   void collisionX() {
     if (position.x>plate.getSizeX()/2)
-      {position.x=plate.getSizeX()/2;
-       speed.x*=(-bouncing);}
+      {
+       position.x=plate.getSizeX()/2;
+       speed.x*=(-bouncing);
+     }
     else if (position.x<-plate.getSizeX()/2) 
-      {position.x=-plate.getSizeX()/2;
-       speed.x*=(-bouncing);}
+      {
+        position.x=-plate.getSizeX()/2;
+       speed.x*=(-bouncing);
+     }
   }
   
   void collisionZ() {
     if (position.y>plate.getSizeZ()/2)
-      {position.y=plate.getSizeZ()/2;
-       speed.y*=(-bouncing);}
+      {
+        position.y=plate.getSizeZ()/2;
+       speed.y*=(-bouncing);
+     }
     else if (position.y<-plate.getSizeZ()/2) 
-      {position.y=-plate.getSizeZ()/2;
-       speed.y*=(-bouncing);}
+      {
+        position.y=-plate.getSizeZ()/2;
+       speed.y*=(-bouncing);
+     }
   }
       
   
   void render() {
     pushMatrix();
     fill(00,66,255);
+    //We print it on the plate
     translate(position.x, -radius-0.5*plate.getSizeY(), position.y);
     sphere(radius);
     popMatrix();
