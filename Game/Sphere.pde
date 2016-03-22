@@ -6,6 +6,9 @@ public class Sphere {
   private PVector gravityForce;
   //private PVector friction;
   private float bouncing = 0.95;
+  //given that friction vector and gravity vector are proportional, we only use an attenuation
+  private float attenuation = 0.95;
+  
   
   Sphere(Plate plate, float r) {
     this.plate = plate;
@@ -19,12 +22,19 @@ public class Sphere {
   
   
   void update() {
-    if (max(abs(radians(plate.getRotZ())), abs(radians(plate.getRotX())))>plate.getMu())
-      {gravityForce.set(sin(radians(plate.getRotZ()))*gravityConstant, 
-                      -sin(radians(plate.getRotX()))*gravityConstant);}
+    
+    float rotZRadians = radians(plate.getRotZ()), rotXRadians = radians(plate.getRotX());
+    
+    if (max(abs(rotZRadians), abs(rotXRadians))>plate.getMu())
+      {
+        gravityForce.set(sin(rotZRadians)*gravityConstant, 
+                        -sin(rotXRadians)*gravityConstant);
+      }
     else
-      {gravityForce.set(0,0);}
-    speed.add(gravityForce).mult(0.95);
+    {
+      gravityForce.set(0,0);
+    }
+    speed.add(gravityForce).mult(attenuation);
     position.add(speed);
     collisionX();
     collisionZ();

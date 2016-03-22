@@ -5,6 +5,7 @@ private final Plate plate = new Plate(SIZE_X, SIZE_Y, SIZE_Z);
 private final int DEPTH = 800;
 private final float gravityConstant = 1;
 
+
 void settings() {
  fullScreen(P3D);
  //size(800, 600, P3D);
@@ -29,6 +30,7 @@ void printLog(int x, int y) {
     text("RotationZ : " + plate.getRotZ(), x+400, y);
     text("Speed : " + plate.getSpeed(), x+800, y);
 }
+
 
 void mouseDragged() {
   if(mouseY - pmouseY > 0) {
