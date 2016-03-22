@@ -4,7 +4,7 @@
 *  There are no rotations along the Y axis.
 */
 
-public class AnotherPlate {
+public class AnotherPlate{
   
   //step of speed and limits for the rotation speed of the plate
   private final float STEP_OF_SPEED = 0.1, MIN_SPEED = 0.2, MAX_SPEED = 5;
@@ -128,6 +128,7 @@ public class AnotherPlate {
       beginShape();
       beginShape(QUADS);
       texture(img);
+      //tint(150,155,255,50);
       // +Z "front" face
       vertex(-sizeX/2, -sizeY/2,  sizeZ/2, 0, 0);
       vertex( sizeX/2, -sizeY/2,  sizeZ/2, 1, 0);
