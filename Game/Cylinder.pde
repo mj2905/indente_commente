@@ -1,4 +1,7 @@
 public class Cylinder {
+  private final float cylinderBaseSize = 50;
+  private final float cylinderBaseHeight = 50;
+  private final int cylinderBaseResolution = 40;
   private Plate plate;
   private final float radius;
   private final PVector position;
@@ -37,6 +40,10 @@ public class Cylinder {
     group.addChild(openCylinder);
     group.addChild(surface);
     this.shape=group;
+  }
+  
+  Cylinder(Plate plate, PVector position) {
+    this(plate, position, cylinderBaseSize, cylinderBaseHeight, cylinderBaseResolution);
   }
   
   void render() {
