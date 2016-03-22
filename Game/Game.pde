@@ -19,7 +19,6 @@ void draw() {
   
   //camera(width/2, height/2, DEPTH, width/2, height/2, 0,0,1.0,0);
   background(151, 185, 255);
-  printLog(0, 0);
   //translate(width/2, height/2, 0);
   
   if (keyPressed && keyCode == SHIFT) {
