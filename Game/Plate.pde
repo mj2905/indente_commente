@@ -137,7 +137,7 @@ public class Plate {
   
   public void addCylinder() {
     if(!normalMode) {
-      cylinders.add(new Cylinder(this, new PVector((mouseX-width/2), mouseY-height/2)));
+      cylinders.add(new Cylinder(this, new PVector((mouseX-width/2)*(this.sizeX/width), (mouseY-height/2)*(this.sizeZ/height))));
     }
   }
   
