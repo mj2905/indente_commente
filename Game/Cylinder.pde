@@ -16,24 +16,28 @@ public class Cylinder {
     this.cylinderHeight = cylinderHeight;
     this.position = position;
     float angle;
+    float angle2;
     PShape openCylinder = createShape();
     openCylinder.beginShape(QUAD_STRIP);
+    openCylinder.fill(255,66,0);
     for(int i=0; i<cylinderResolution+1; i++) {
       angle = (TWO_PI/cylinderResolution)*i;
-      openCylinder.vertex((sin(angle)*this.radius), (cos(angle)*this.radius), 0);
-      openCylinder.vertex(sin(angle)*this.radius, cos(angle)*this.radius, this.cylinderHeight);
+      openCylinder.vertex((sin(angle)*this.radius), 0, (cos(angle)*this.radius));
+      openCylinder.vertex(sin(angle)*this.radius, this.cylinderHeight, cos(angle)*this.radius);
     }
     openCylinder.endShape();
     PShape surface = createShape();
     surface.beginShape(TRIANGLES);
+    surface.fill(255,66,0);
     for(int i = 0; i < cylinderResolution+1; i++) {
       angle = (TWO_PI/cylinderResolution)*i;
-       surface.vertex((sin(angle)*this.radius)+(TWO_PI/cylinderResolution),(cos(angle)*this.radius)+(TWO_PI/cylinderResolution),0);
-       surface.vertex((sin(angle)*this.radius), (cos(angle)*this.radius), 0);
+      angle2 = (TWO_PI/cylinderResolution)*(i+1);
+       surface.vertex(sin(angle2)*this.radius,0, cos(angle2)*this.radius);
+       surface.vertex(sin(angle)*this.radius, 0, cos(angle)*this.radius);
        surface.vertex(0,0,0);
-       surface.vertex((sin(angle)*this.radius)+(TWO_PI/cylinderResolution),(cos(angle)*this.radius)+(TWO_PI/cylinderResolution),cylinderHeight);
-       surface.vertex((sin(angle)*this.radius), (cos(angle)*this.radius), cylinderHeight);
-       surface.vertex(0,0,cylinderHeight);
+       surface.vertex(sin(angle2)*this.radius,cylinderHeight, cos(angle2)*this.radius);
+       surface.vertex(sin(angle)*this.radius, cylinderHeight, cos(angle)*this.radius);
+       surface.vertex(0,cylinderHeight,0);
     }
     surface.endShape();
     PShape group = createShape(GROUP);
@@ -48,8 +52,8 @@ public class Cylinder {
   
   void render() {
     pushMatrix();
-    fill(255,66,0);
-    translate(position.x, this.plate.sizeY*0.5, position.y);
+    //fill(255,66,0);
+    translate(position.x, -this.plate.sizeY*0.5-this.cylinderBaseHeight, position.y);
     shape(shape);
     popMatrix();
   }

@@ -118,22 +118,26 @@ public class Plate {
   }
   
   public void upMode() {
-    modeRotXFreeze = rotationX;
-    modeRotZFreeze = rotationZ;
-    rotationX = radians(90);
-    rotationZ = radians(0);
-    normalMode = false;
+    if (normalMode) {
+      modeRotXFreeze = rotationX;
+      modeRotZFreeze = rotationZ;
+      rotationX = -radians(90);
+      rotationZ = radians(0);
+      normalMode = false;
+    }
   }
   
   public void normalMode() {
-    rotationX = modeRotXFreeze;
-    rotationZ = modeRotZFreeze;
-    normalMode = true;
+    if (!normalMode) {
+      rotationX = modeRotXFreeze;
+      rotationZ = modeRotZFreeze;
+      normalMode = true;
+    }
   }
   
   public void addCylinder() {
     if(!normalMode) {
-      cylinders.add(new Cylinder(this, new PVector(mouseX, mouseY)));
+      cylinders.add(new Cylinder(this, new PVector((mouseX-width/2), mouseY-height/2)));
     }
   }
   
@@ -151,5 +155,21 @@ public class Plate {
       }
       popMatrix();
   }
+  
+  public void noUpdateRender() {
+      pushMatrix();
+      fill(133,123,227);
+      rotateX(rotationX);
+      rotateY(rotationY);
+      rotateZ(rotationZ);
+      box(sizeX,sizeY,sizeZ);
+      sphere.render();
+      for(int i=0; i < cylinders.size(); ++i) {
+         cylinders.get(i).render(); 
+      }
+      popMatrix();
+  }
+  
+  
   
 }

@@ -16,11 +16,26 @@ void setup(){
 }
 
 void draw() {
-  camera(width/2, height/2, DEPTH, width/2, height/2, 0,0,1.0,0);
-  background(151, 185, 255);
-  printLog(0, 0);
-  translate(width/2, height/2, 0);
-  plate.render();
+  if (keyPressed) {
+    if (keyCode == SHIFT)
+      {
+        plate.upMode();
+        camera(width/2, height/2, DEPTH, width/2, height/2, 0,0,1.0,0);
+        background(151, 185, 255);
+        printLog(0, 0);
+        translate(width/2, height/2, 0);
+        plate.noUpdateRender();
+      }
+  }
+  else
+    {
+      plate.normalMode();
+      camera(width/2, height/2, DEPTH, width/2, height/2, 0,0,1.0,0);
+      background(151, 185, 255);
+      printLog(0, 0);
+      translate(width/2, height/2, 0);
+      plate.render();
+    }
 }
 
 void printLog(int x, int y) {
@@ -36,16 +51,18 @@ void mouseClicked() {
 }
 
 void mouseDragged() {
-  if(mouseY - pmouseY > 0) {
-      plate.setRotX(plate.getRotX() - plate.getSpeed());
-  } else if(mouseY - pmouseY < 0) {
-      plate.setRotX(plate.getRotX() + plate.getSpeed());
-  }
-  
-  if(mouseX - pmouseX > 0) {
-      plate.setRotZ(plate.getRotZ() + plate.getSpeed());
-  } else if(mouseX - pmouseX < 0) {
-      plate.setRotZ(plate.getRotZ() - plate.getSpeed());
+  if (plate.normalMode) {
+    if(mouseY - pmouseY > 0) {
+        plate.setRotX(plate.getRotX() - plate.getSpeed());
+    } else if(mouseY - pmouseY < 0) {
+        plate.setRotX(plate.getRotX() + plate.getSpeed());
+    }
+    
+    if(mouseX - pmouseX > 0) {
+        plate.setRotZ(plate.getRotZ() + plate.getSpeed());
+    } else if(mouseX - pmouseX < 0) {
+        plate.setRotZ(plate.getRotZ() - plate.getSpeed());
+    }
   }
 
 }
@@ -53,20 +70,4 @@ void mouseDragged() {
 void mouseWheel(MouseEvent event) {
   float scroll = event.getCount();
   plate.setSpeed(plate.getSpeed() + scroll * plate.STEP_OF_SPEED);
-}
-
-void keyPressed() {
- if(keyCode == SHIFT) {
-   plate.upMode();
-   plate.render();
-   noLoop();
- }
-}
-
-void keyReleased() {
-  if(keyCode == SHIFT) {
-       plate.normalMode();
-       plate.render();
-   loop();
- }
 }
