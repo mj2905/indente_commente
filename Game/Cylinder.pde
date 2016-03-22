@@ -43,15 +43,16 @@ public class Cylinder {
   }
   
   Cylinder(Plate plate, PVector position) {
-    this(plate, position, cylinderBaseSize, cylinderBaseHeight, cylinderBaseResolution);
+    this(plate, position, 50, 50, 40);
   }
   
   void render() {
     pushMatrix();
     fill(255,66,0);
-    translate(position.x, this.plate.sizeY*0.5, posistion.y);
+    translate(position.x, this.plate.sizeY*0.5, position.y);
     shape(shape);
     popMatrix();
+  }
 }
 
     
