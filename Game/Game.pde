@@ -31,6 +31,9 @@ void printLog(int x, int y) {
     text("Speed : " + plate.getSpeed(), x+800, y);
 }
 
+void mouseClicked() {
+ plate.addCylinder();
+}
 
 void mouseDragged() {
   if(mouseY - pmouseY > 0) {
@@ -50,4 +53,20 @@ void mouseDragged() {
 void mouseWheel(MouseEvent event) {
   float scroll = event.getCount();
   plate.setSpeed(plate.getSpeed() + scroll * plate.STEP_OF_SPEED);
+}
+
+void keyPressed() {
+ if(keyCode == SHIFT) {
+   plate.upMode();
+   plate.render();
+   noLoop();
+ }
+}
+
+void keyReleased() {
+  if(keyCode == SHIFT) {
+       plate.normalMode();
+       plate.render();
+   loop();
+ }
 }

@@ -22,7 +22,15 @@ public class Plate {
   private float rotationZ;
   private float speed;
   private final Sphere sphere;
-  //private final List<Cylinder> cylinders;
+  private final List<Cylinder> cylinders;
+  
+  private float modeRotXFreeze = 0, modeRotZFreeze = 0;
+  private boolean normalMode;
+  
+  
+  public Plate(float sizeX, float sizeY, float sizeZ) {
+    this(sizeX, sizeY, sizeZ, 0,0);
+  }
   
   public Plate(float sizeX, float sizeY, float sizeZ, float rotX, float rotZ) {
    this.sizeX = sizeX;
@@ -35,10 +43,11 @@ public class Plate {
    
    this.speed = 1;
    
-   //cylinders = new List<Cylinder>();
+   normalMode = true;
+   
+   cylinders = new ArrayList<Cylinder>();
    sphere = new Sphere(this, SPHERE_RADIUS);
   }
-  
   
   public float getSizeX() {
      return sizeX; 
@@ -108,9 +117,24 @@ public class Plate {
      }
   }
   
+  public void upMode() {
+    modeRotXFreeze = rotationX;
+    modeRotZFreeze = rotationZ;
+    rotationX = radians(90);
+    rotationZ = radians(0);
+    normalMode = false;
+  }
   
-  public Plate(float sizeX, float sizeY, float sizeZ) {
-    this(sizeX, sizeY, sizeZ, 0,0);
+  public void normalMode() {
+    rotationX = modeRotXFreeze;
+    rotationZ = modeRotZFreeze;
+    normalMode = true;
+  }
+  
+  public void addCylinder() {
+    if(!normalMode) {
+      cylinders.add(new Cylinder(this, new PVector(mouseX, mouseY)));
+    }
   }
   
   public void render() {
@@ -122,6 +146,9 @@ public class Plate {
       box(sizeX,sizeY,sizeZ);
       sphere.update();
       sphere.render();
+      for(int i=0; i < cylinders.size(); ++i) {
+         cylinders.get(i).render(); 
+      }
       popMatrix();
   }
   
