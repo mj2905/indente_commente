@@ -3,7 +3,7 @@ private final int SIZE_X = 700, SIZE_Y = 20, SIZE_Z = 700;
 private final Plate plate = new Plate(SIZE_X, SIZE_Y, SIZE_Z);
 //Distance of camera
 private final int DEPTH = 800;
-private final float gravityConstant = 1; //We could have put 0.3, to handle the 1/30 factor perfectly, but it's too slow and unrealistic => we only use a 1/10 factor
+private final float gravityConstant = 9.81 * 1/frameRate * 3; //Without the 3 : too slow and unrealistic
 
 
 void settings() {
@@ -16,24 +16,16 @@ void setup(){
 }
 
 void draw() {
-  if (keyPressed) {
-    if (keyCode == SHIFT)
-      {
-        plate.upMode();
-        camera(width/2, height/2, DEPTH, width/2, height/2, 0,0,1.0,0);
-        background(151, 185, 255);
-        printLog(0, 0);
-        translate(width/2, height/2, 0);
+  
+  camera(width/2, height/2, DEPTH, width/2, height/2, 0,0,1.0,0);
+  background(151, 185, 255);
+  printLog(0, 0);
+  translate(width/2, height/2, 0);
+  
+  if (keyPressed && keyCode == SHIFT) {
         plate.noUpdateRender();
-      }
   }
-  else
-    {
-      plate.normalMode();
-      camera(width/2, height/2, DEPTH, width/2, height/2, 0,0,1.0,0);
-      background(151, 185, 255);
-      printLog(0, 0);
-      translate(width/2, height/2, 0);
+  else {
       plate.render();
     }
 }

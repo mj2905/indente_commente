@@ -119,6 +119,7 @@ public class Plate {
   
   public void upMode() {
     if (normalMode) {
+      ortho();
       modeRotXFreeze = rotationX;
       modeRotZFreeze = rotationZ;
       rotationX = -radians(90);
@@ -129,6 +130,7 @@ public class Plate {
   
   public void normalMode() {
     if (!normalMode) {
+      perspective();
       rotationX = modeRotXFreeze;
       rotationZ = modeRotZFreeze;
       normalMode = true;
@@ -142,6 +144,8 @@ public class Plate {
   }
   
   public void render() {
+      normalMode();
+      
       pushMatrix();
       fill(133,123,227);
       rotateX(rotationX);
@@ -157,6 +161,8 @@ public class Plate {
   }
   
   public void noUpdateRender() {
+      upMode();
+    
       pushMatrix();
       fill(133,123,227);
       rotateX(rotationX);
