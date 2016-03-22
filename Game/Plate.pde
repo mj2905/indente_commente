@@ -28,14 +28,14 @@ public class Plate {
   private boolean normalMode;
   
   // a few fonctions to access attributes:
-  public float getSizeX() {return sizeX;}
-  public float getSizeY() {return sizeY;}
-  public float getSizeZ() {return sizeZ;}
-  public float getRotX() {return degrees(rotationX);}
-  public float getRotY() {return degrees(rotationY);}
-  public float getRotZ() {return degrees(rotationZ);}
-  public float getSpeed() {return speed;}
-  public float getMu() {return MU;}
+  public float getSizeX() { return sizeX; }
+  public float getSizeY() { return sizeY; }
+  public float getSizeZ() { return sizeZ; }
+  public float getRotX() { return degrees(rotationX); }
+  public float getRotY() { return degrees(rotationY); }
+  public float getRotZ() { return degrees(rotationZ); }
+  public float getSpeed() { return speed; }
+  public float getMu() { return MU; }
   
   //constructors
   public Plate(float sizeX, float sizeY, float sizeZ) {
@@ -93,6 +93,7 @@ public class Plate {
   
   
   //core of the class
+  
   public void upMode() {
     if (normalMode) {
       ortho();

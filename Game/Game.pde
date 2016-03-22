@@ -33,17 +33,15 @@ void draw() {
   
   if (keyPressed && keyCode == SHIFT) {
         camera(width/2, height/2, DEPTH, width/2, height/2, 0,0,1.0,0);
-        translate(width/2, height/2, 0);
         plate.upMode();
-        plate.render();
   }
   else {
       // changes to the camera in order to see better what we are doing when angleX>0
       camera(width/2, -height/8, DEPTH, width/2, height/2, 0,0,1.0,0); 
-      translate(width/2, height/2, 0);
       plate.normalMode();
-      plate.render();
     }
+       translate(width/2, height/2, 0);
+       plate.render();
 }
 
 void printLog(int x, int y) {
