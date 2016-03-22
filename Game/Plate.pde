@@ -4,13 +4,16 @@
 *  There are no rotations along the Y axis.
 */
 
+import java.util.List;
+
+
 public class Plate {
   
   //step of speed and limits for the rotation speed of the plate
   private final float STEP_OF_SPEED = 0.1, MIN_SPEED = 0.2, MAX_SPEED = 5;
   private final float MAX_ANGLE = 60, MIN_ANGLE = -60;
   private final float SPHERE_RADIUS = 30;
-  private final float MU = 0.1;
+  private final float MU = 0.1; //corresponds to the minimum angle necessary to apply force
   private final float sizeX;
   private final float sizeY;
   private final float sizeZ;
@@ -18,7 +21,24 @@ public class Plate {
   private float rotationY;
   private float rotationZ;
   private float speed;
-  private final Sphere sphere = new Sphere(this, SPHERE_RADIUS);
+  private final Sphere sphere;
+  //private final List<Cylinder> cylinders;
+  
+  public Plate(float sizeX, float sizeY, float sizeZ, float rotX, float rotZ) {
+   this.sizeX = sizeX;
+   this.sizeY = sizeY;
+   this.sizeZ = sizeZ;
+   
+   setRotX(rotX);
+   this.rotationY = 0;
+   setRotZ(rotZ);
+   
+   this.speed = 1;
+   
+   //cylinders = new List<Cylinder>();
+   sphere = new Sphere(this, SPHERE_RADIUS);
+  }
+  
   
   public float getSizeX() {
      return sizeX; 
@@ -33,15 +53,15 @@ public class Plate {
   }
   
   public float getRotX() {
-     return toDegrees(rotationX); 
+     return degrees(rotationX); 
   }
   
   public float getRotY() {
-     return toDegrees(rotationY); 
+     return degrees(rotationY); 
   }
   
   public float getRotZ() {
-     return toDegrees(rotationZ); 
+     return degrees(rotationZ); 
   }
   
   public float getSpeed() {
@@ -54,25 +74,25 @@ public class Plate {
   
   public void setRotX(float rotX) {
       if(rotX > MAX_ANGLE) {
-        rotationX = toRadians(MAX_ANGLE);
+        rotationX = radians(MAX_ANGLE);
       }
       else if(rotX < MIN_ANGLE) {
-       rotationX = toRadians(MIN_ANGLE); 
+       rotationX = radians(MIN_ANGLE); 
       }
       else {
-        rotationX = toRadians(rotX);
+        rotationX = radians(rotX);
       }
   }
   
   public void setRotZ(float rotZ) {
       if(rotZ > MAX_ANGLE) {
-        rotationZ = toRadians(MAX_ANGLE);
+        rotationZ = radians(MAX_ANGLE);
       }
       else if(rotZ < MIN_ANGLE) {
-       rotationZ = toRadians(MIN_ANGLE); 
+       rotationZ = radians(MIN_ANGLE); 
       }
       else {
-        rotationZ = toRadians(rotZ);
+        rotationZ = radians(rotZ);
       }
   }
   
@@ -91,24 +111,6 @@ public class Plate {
   
   public Plate(float sizeX, float sizeY, float sizeZ) {
     this(sizeX, sizeY, sizeZ, 0,0);
-  }
-  
-  public Plate(float sizeX, float sizeY, float sizeZ, float rotX, float rotZ) {
-   this.sizeX = sizeX;
-   this.sizeY = sizeY;
-   this.sizeZ = sizeZ;
-   setRotX(rotX);
-   this.rotationY = 0;
-   setRotZ(rotZ);
-   this.speed = 1;
-  }
-  
-  private float toRadians(float angleInDegree) {
-   return angleInDegree * PI / 180; 
-  }
-  
-  private float toDegrees(float angleInRadians) {
-   return angleInRadians * 180 / PI; 
   }
   
   public void render() {

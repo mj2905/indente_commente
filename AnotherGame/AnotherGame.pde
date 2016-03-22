@@ -2,7 +2,7 @@
 private final int SIZE_X = 700, SIZE_Y = 20, SIZE_Z = 700;
 private PImage imgPlaque;
 private PImage imgSphere;
-private YetAnotherSphere s;
+//private YetAnotherSphere s;
 private AnotherPlate plate;
 //Distance of camera
 private final int DEPTH = 800;
