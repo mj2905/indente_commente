@@ -22,7 +22,7 @@ public class Plate {
   private float rotationZ;
   private float speed;
   private final Sphere sphere;
-  private final List<Cylinder> cylinders;
+  //private final List<Cylinder> cylinders;
   
   public Plate(float sizeX, float sizeY, float sizeZ, float rotX, float rotZ) {
    this.sizeX = sizeX;
@@ -35,8 +35,8 @@ public class Plate {
    
    this.speed = 1;
    
-   cylinders = new List<Cylinder>();
-   sphere = new Sphere(this, SPHERE_RADIUS)
+   //cylinders = new List<Cylinder>();
+   sphere = new Sphere(this, SPHERE_RADIUS);
   }
   
   

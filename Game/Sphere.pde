@@ -14,6 +14,8 @@ public class Sphere {
     this.plate = plate;
     this.position = new PVector(0, 0);
     this.radius = r;
+    
+    //To define this vector once
     gravityForce = new PVector(sin(plate.getRotZ())*gravityConstant, 
                                sin(plate.getRotX())*gravityConstant);
     speed = new PVector(0, 0);
@@ -25,6 +27,7 @@ public class Sphere {
     
     float rotZRadians = radians(plate.getRotZ()), rotXRadians = radians(plate.getRotX());
     
+    //If we have an angle around x or z that is more than the mu angle
     if (max(abs(rotZRadians), abs(rotXRadians))>plate.getMu())
       {
         gravityForce.set(sin(rotZRadians)*gravityConstant, 
