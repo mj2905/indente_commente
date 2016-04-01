@@ -4,6 +4,9 @@
 *  There are no rotations along the Y axis.
 */
 
+import java.util.List;
+
+
 public class AnotherPlate{
   
   //step of speed and limits for the rotation speed of the plate
@@ -21,6 +24,10 @@ public class AnotherPlate{
   private PImage img;
   private PImage img2;
   private YetAnotherSphere sphere;
+  private final List<AnotherCylinder> cylinders;
+  
+  private float modeRotXFreeze = 0, modeRotZFreeze = 0;
+  private boolean normalMode;
   
   public AnotherPlate(float sizeX, float sizeY, float sizeZ, PImage img, PImage img2) {
     this(sizeX, sizeY, sizeZ, 0,0, img, img2);
@@ -36,6 +43,7 @@ public class AnotherPlate{
    this.speed = 1;
    this.img = img;
    this.img2 = img2;
+   cylinders = new ArrayList<AnotherCylinder>();
    sphere = new YetAnotherSphere(createShape(SPHERE, SPHERE_RADIUS), img2, this, SPHERE_RADIUS);
   }
   
@@ -74,25 +82,25 @@ public class AnotherPlate{
   
   public void setRotX(float rotX) {
       if(rotX > MAX_ANGLE) {
-        rotationX = toRadians(MAX_ANGLE);
+        rotationX = radians(MAX_ANGLE);
       }
       else if(rotX < MIN_ANGLE) {
-       rotationX = toRadians(MIN_ANGLE); 
+       rotationX = radians(MIN_ANGLE); 
       }
       else {
-        rotationX = toRadians(rotX);
+        rotationX = radians(rotX);
       }
   }
   
   public void setRotZ(float rotZ) {
       if(rotZ > MAX_ANGLE) {
-        rotationZ = toRadians(MAX_ANGLE);
+        rotationZ = radians(MAX_ANGLE);
       }
       else if(rotZ < MIN_ANGLE) {
-       rotationZ = toRadians(MIN_ANGLE); 
+       rotationZ = radians(MIN_ANGLE); 
       }
       else {
-        rotationZ = toRadians(rotZ);
+        rotationZ = radians(rotZ);
       }
   }
   
@@ -106,6 +114,38 @@ public class AnotherPlate{
      else {
        this.speed = speed; 
      }
+  }
+  
+  
+  //core of the class
+  
+  public void upMode() {
+    if (normalMode) {
+      ortho();
+      modeRotXFreeze = rotationX;
+      modeRotZFreeze = rotationZ;
+      rotationX = -radians(90);
+      rotationZ = radians(0);
+      normalMode = false;
+    }
+  }
+  
+  public void normalMode() {
+    if (!normalMode) {
+      perspective();
+      rotationX = modeRotXFreeze;
+      rotationZ = modeRotZFreeze;
+      normalMode = true;
+    }
+  }
+  
+  public void addCylinder() {
+    if(!normalMode) {
+      //cylinders.add(new Cylinder(this, new PVector((mouseX-width/2)*(this.sizeX/width), (mouseY-height/2)*(this.sizeZ/height))));
+      if(mouseX > (width - sizeX)/2 && mouseX < (width + sizeX)/2 && mouseY > (height - sizeZ)/2 && mouseY < (height + sizeZ/2)) {
+              cylinders.add(new AnotherCylinder(this, new PVector((mouseX-width/2), (mouseY-height/2))));
+      }
+    }
   }
   
   
@@ -171,8 +211,13 @@ public class AnotherPlate{
       /*texture(img);
       box(sizeX,sizeY,sizeZ);*/
       endShape();
-      sphere.update();
+      if (normalMode) {
+        sphere.update();
+      }
       sphere.render();
+       for(AnotherCylinder c: cylinders) {
+         c.render(); 
+      }
       popMatrix();
   }
   

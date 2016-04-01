@@ -134,8 +134,8 @@ public class Plate {
         sphere.update();
       }
       sphere.render();
-      for(int i=0; i < cylinders.size(); ++i) {
-         cylinders.get(i).render(); 
+      for(Cylinder c: cylinders) {
+         c.render(); 
       }
       popMatrix();
   }

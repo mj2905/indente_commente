@@ -6,10 +6,12 @@ private PImage imgSphere;
 private AnotherPlate plate;
 //Distance of camera
 private final int DEPTH = 800;
-private final float gravityConstant = 1;
+private final float gravityConstant = 9.81 * 1/frameRate * 3; //Without the 3 : too slow and unrealistic
+
 
 void settings() {
- size(500,500,P3D);
+ fullScreen(P3D);
+ 
 }
 
 void setup(){
@@ -17,14 +19,37 @@ void setup(){
   PImage imgSphere = loadImage("opale.jpg");
   PImage imgPlaque = loadImage("emerald.jpg");
   textureMode(NORMAL);
+  
   // On initialise la plaque et la bouboule en même temps dans le SETUP pour pouvoir lui passer les images de textures, qui doivent être initialisées ici et pas avant.
   plate = new AnotherPlate(SIZE_X, SIZE_Y, SIZE_Z, imgPlaque, imgSphere); 
   //s = new YetAnotherSphere(createShape(SPHERE, 30), imgSphere, plate, 30);
 }
 
 void draw() {
-  camera(width/2, height/2, DEPTH, width/2, height/2, 0,0,1.0,0);
+  //camera(width/2, height/2, DEPTH, width/2, height/2, 0,0,1.0,0);
   background(151, 185, 255);
+  
+    /*
+  Here, we discriminate against whether SHIFT is pressed, for academic purposes.
+  When shift is pressed, we set our plate to "upmode":
+    in upmode, the plate is drawn vertically and the sphere never updates and it is impossible to rotate the plate.
+    as such, it sort of simulates a pause (in order to avoid using noloop...)
+    The function plate.add(cylinder) is also enabled.
+  When SHIFT is released, we go back to "normal mode", the only changes being that we may now have a few cylinders.
+    possibility to rotate, and physics are back
+  */
+  
+  if (keyPressed && keyCode == SHIFT) {
+        camera(width/2, height/2, DEPTH, width/2, height/2, 0,0,1.0,0);
+        plate.upMode();
+  }
+  else {
+      // changes to the camera in order to see better what we are doing when angleX>0
+      camera(width/2, -height/8, DEPTH, width/2, height/2, 0,0,1.0,0); 
+      plate.normalMode();
+    }
+  
+  
   printLog(0, 0);
   translate(width/2, height/2, 0);
   plate.render();
@@ -53,6 +78,11 @@ void mouseDragged() {
   }
 
 }
+
+void mouseClicked() {
+ plate.addCylinder();
+}
+
 
 void mouseWheel(MouseEvent event) {
   float scroll = event.getCount();
