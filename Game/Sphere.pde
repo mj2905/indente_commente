@@ -83,7 +83,7 @@ public class Sphere {
     PVector n = norma.normalize();
     float number1 = n.dot(disSpeed)*2;
     PVector vPrime = n.mult(number1);
-    return disSpeed.sub(vPrime);
+    return disSpeed.sub(vPrime).mult(bouncing);
   }
   
   /**
