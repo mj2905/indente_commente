@@ -21,7 +21,8 @@ public class Sphere {
     speed = new PVector(0, 0);
   }
   
-  
+  public PVector getPosition() { return position.copy(); }
+  public float getRadius() { return radius; }
   
   void update() {
     gravity();

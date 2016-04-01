@@ -116,9 +116,15 @@ public class Plate {
   
   public void addCylinder() {
     if(!normalMode) {
-      //cylinders.add(new Cylinder(this, new PVector((mouseX-width/2)*(this.sizeX/width), (mouseY-height/2)*(this.sizeZ/height))));
+      
       if(mouseX > (width - sizeX)/2 && mouseX < (width + sizeX)/2 && mouseY > (height - sizeZ)/2 && mouseY < (height + sizeZ/2)) {
-              cylinders.add(new Cylinder(this, new PVector((mouseX-width/2), (mouseY-height/2))));
+        
+              //If after we want to have cylinders with bigger radius to improve the game, we do this here.
+              Cylinder cylinder = new Cylinder(this, new PVector((mouseX-width/2), (mouseY-height/2)));
+              boolean isMouseInBall = (new PVector(mouseX - width/2, mouseY - height/2)).dist(sphere.getPosition()) < sphere.getRadius() + cylinder.radius;
+              if(!isMouseInBall) {
+                  cylinders.add(cylinder);
+              }
       }
     }
   }
