@@ -122,7 +122,12 @@ public class Plate {
               //If after we want to have cylinders with bigger radius to improve the game, we do this here.
               Cylinder cylinder = new Cylinder(this, new PVector((mouseX-width/2), (mouseY-height/2)));
               boolean isMouseInBall = (new PVector(mouseX - width/2, mouseY - height/2)).dist(sphere.getPosition()) < sphere.getRadius() + cylinder.radius;
-              if(!isMouseInBall) {
+              boolean isMouseInAnotherCylinder = false;
+              for(Cylinder c : cylinders) {
+                  isMouseInAnotherCylinder |= c.position.dist(cylinder.position) < c.radius + cylinder.radius;
+              }
+              
+              if(!isMouseInBall && !isMouseInAnotherCylinder) {
                   cylinders.add(cylinder);
               }
       }

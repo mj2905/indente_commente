@@ -1,6 +1,6 @@
 //Size of the plate
-private final int SIZE_X = 700, SIZE_Y = 20, SIZE_Z = 700;
-private final Plate plate = new Plate(SIZE_X, SIZE_Y, SIZE_Z);
+private final int SIZE_Y = 20;
+private Plate plate;
 //Distance of camera
 private final int DEPTH = 800;
 private final float gravityConstant = 9.81 * 1/frameRate * 3; //Without the 3 : too slow and unrealistic
@@ -8,11 +8,12 @@ private final float gravityConstant = 9.81 * 1/frameRate * 3; //Without the 3 : 
 
 void settings() {
  fullScreen(P3D);
- //size(800, 600, P3D);
 }
 
 void setup(){
   noStroke();
+  int SIZE_X_Z = floor(min(height, width) * 5.0/6.0);
+  plate = new Plate(SIZE_X_Z, SIZE_Y, SIZE_X_Z);
 }
 
 void draw() {
@@ -50,6 +51,7 @@ void printLog(int x, int y) {
     text("RotationX : " + plate.getRotX(), x, y);
     text("RotationZ : " + plate.getRotZ(), x+400, y);
     text("Speed : " + plate.getSpeed(), x+800, y);
+    text("SpeedSphere : " + plate.sphere.speed.x, x + 1000, y);
 }
 
 void mouseClicked() {
