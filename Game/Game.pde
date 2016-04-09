@@ -12,6 +12,7 @@ void settings() {
 
 void setup(){
   noStroke();
+  //To keep a ratio with the screen, avoiding a loss of the plate when in Shift mode
   int SIZE_X_Z = floor(min(height, width) * 5.0/6.0);
   plate = new Plate(SIZE_X_Z, SIZE_Y, SIZE_X_Z);
 }
@@ -45,6 +46,7 @@ void draw() {
        plate.render();
 }
 
+/* For debug
 void printLog(int x, int y) {
   fill(60);
     textSize(20);
@@ -53,6 +55,7 @@ void printLog(int x, int y) {
     text("Speed : " + plate.getSpeed(), x+800, y);
     text("SpeedSphere : " + plate.sphere.speed.x, x + 1000, y);
 }
+*/
 
 void mouseClicked() {
  plate.addCylinder();

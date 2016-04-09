@@ -39,7 +39,7 @@ public class Sphere {
   }
   
   /**
-  Checks for every cylinder if there is a collision or not!
+  Checks for every cylinder if there is a collision or not
   */
   
   void checkCylindersCollision(){
@@ -77,7 +77,7 @@ public class Sphere {
   
   
   /**
-  This method simply corrects the bouncing angle.
+  This method simply corrects the bouncing speed using the formula from the statement.
   */
   PVector bouncingSpeed(PVector disSpeed, PVector norma){
     PVector n = norma.normalize();

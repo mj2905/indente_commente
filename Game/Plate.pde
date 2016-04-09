@@ -1,9 +1,3 @@
-/**
-*  Plate class, representing the plate in the view.
-*  This plate can be rotated along the X and Z axis, within the range [-60; 60] degrees (in the class, in radians)
-*  There are no rotations along the Y axis.
-*/
-
 import java.util.List;
 
 
@@ -24,6 +18,7 @@ public class Plate {
   private final Sphere sphere;
   private final List<Cylinder> cylinders;
   
+  //Modes to keep the normal state while in Shift mode
   private float modeRotXFreeze = 0, modeRotZFreeze = 0;
   private boolean normalMode;
   
@@ -94,6 +89,7 @@ public class Plate {
   
   //core of the class
   
+  //upMode = mode in which we are in the top view, with an ortho camera (Shift mode)
   public void upMode() {
     if (normalMode) {
       ortho();
@@ -105,6 +101,7 @@ public class Plate {
     }
   }
   
+  //upMode = mode in which we are in normal view with a perspective camera
   public void normalMode() {
     if (!normalMode) {
       perspective();
@@ -114,6 +111,7 @@ public class Plate {
     }
   }
   
+  //function to add a cylinder in the plate (not touching the ball and not touching another cylinder)
   public void addCylinder() {
     if(!normalMode) {
       
@@ -142,6 +140,7 @@ public class Plate {
       rotateZ(rotationZ);
       box(sizeX,sizeY,sizeZ);
       if (normalMode) {
+        //If we are in top mode, no update of the ball
         sphere.update();
       }
       sphere.render();
