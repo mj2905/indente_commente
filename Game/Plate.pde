@@ -115,7 +115,7 @@ public class Plate {
   public void addCylinder() {
     if(!normalMode) {
       
-      if(mouseX > (width - sizeX)/2 && mouseX < (width + sizeX)/2 && mouseY > (height - sizeZ)/2 && mouseY < (height + sizeZ/2)) {
+      if(mouseX > (width - sizeX)/2 && mouseX < (width + sizeX)/2 && mouseY > (height - sizeZ)/2 && mouseY < (height + sizeZ)/2) {
         
               //If after we want to have cylinders with bigger radius to improve the game, we do this here.
               Cylinder cylinder = new Cylinder(this, new PVector((mouseX-width/2), (mouseY-height/2)));
