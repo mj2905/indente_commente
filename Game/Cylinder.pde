@@ -35,6 +35,7 @@ public class Cylinder {
     PShape openCylinder = createShape();
     openCylinder.beginShape(QUAD_STRIP);
     openCylinder.fill(30,105,255);
+    openCylinder.noStroke();
     
     for(int i = 0; i < cylinderResolution+1; ++i) {
       pAngle = angle*i;
@@ -56,6 +57,7 @@ public class Cylinder {
     PShape surface = createShape();
     surface.beginShape(TRIANGLES);
     surface.fill(60,148,255);
+    surface.noStroke();
     
     for(int i = 0; i < cylinderResolution+1; ++i) {
       

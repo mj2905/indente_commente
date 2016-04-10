@@ -16,8 +16,8 @@ void settings() {
 }
 
 void setup(){
-  noStroke();
-  guiHeight = height/8;
+  frameRate(100);
+  guiHeight = height/4;
   gameGraphics = createGraphics(width, height - guiHeight, P3D);
   guiGraphics = createGraphics(width, guiHeight, P3D);
   
@@ -25,11 +25,15 @@ void setup(){
   int SIZE_X_Z = floor(min(gameGraphics.width, gameGraphics.height) * 5.0/6.0);
   plate = new Plate(SIZE_X_Z, SIZE_Y, SIZE_X_Z);
   
+  gameGraphics.beginDraw();
+    gameGraphics.noStroke();
+  gameGraphics.endDraw();
+
+  
   
 }
 
 void draw() {
-  println(mouseY);
   background(151, 185, 255);
        gameRender();
        guiRender();
@@ -41,7 +45,6 @@ void draw() {
 void gameRender() {
    gameGraphics.beginDraw();
        gameGraphics.clear();
-       gameGraphics.noStroke();
        
        if (keyPressed && keyCode == SHIFT) {
           plate.upMode(gameGraphics);
@@ -51,7 +54,7 @@ void gameRender() {
         plate.normalMode(gameGraphics);
         }
        
-       gameGraphics.translate(width/2, height/2, DEPTH);
+       gameGraphics.translate(gameGraphics.width/2, gameGraphics.height/2, DEPTH);
        plate.render(gameGraphics);
    gameGraphics.endDraw();
 }
@@ -72,9 +75,9 @@ void printLog(int x, int y) {
     text("Speed : " + plate.getSpeed(), x+800, y);
     text("SpeedSphere : " + plate.sphere.speed.x, x + 1000, y);
 }
-*/
+*/ //<>//
 
-void mouseClicked() { //<>//
+void mouseClicked() {
      plate.addCylinder(gameGraphics);
 }
 
