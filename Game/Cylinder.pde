@@ -9,6 +9,9 @@ public class Cylinder {
   private int cylinderResolution;
   private float cylinderHeight;
   
+  public float getRadius() { return radius; }
+  public PVector getPosition() { return position.copy(); }
+  
   Cylinder(Plate plate, PVector position) {
     this(plate, position, cylinderBaseSize, cylinderBaseHeight, cylinderBaseResolution);
   }

@@ -31,6 +31,8 @@ public class Plate {
   public float getRotZ() { return degrees(rotationZ); }
   public float getSpeed() { return speed; }
   public float getMu() { return MU; }
+  public Sphere getSphere() { return sphere; } //Warning !!! Returns the reference : be careful
+  public List<Cylinder> getCylinders() { return cylinders; } //Warning !!! Returns the reference : be careful
   
   //constructors
   public Plate(float sizeX, float sizeY, float sizeZ) {

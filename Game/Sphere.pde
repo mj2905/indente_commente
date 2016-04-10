@@ -9,11 +9,15 @@ public class Sphere {
   //given that friction vector and gravity vector are proportional, we only use an attenuation
   private float attenuation = 0.95;
   
+  private PVector oldPosition; //For data visualization
+  
   
   Sphere(Plate plate, float r) {
     this.plate = plate;
     this.position = new PVector(0, 0);
     this.radius = r;
+    
+    this.oldPosition = new PVector(0,0);
     
     //To define this vector once
     gravityForce = new PVector(sin(plate.getRotZ())*gravityConstant, 
@@ -22,20 +26,14 @@ public class Sphere {
   }
   
   public PVector getPosition() { return position.copy(); }
+  public PVector getOldPosition() { return oldPosition.copy(); }
   public float getRadius() { return radius; }
   
   void update() {
+    oldPosition = position.copy();
     gravity();
-    boxCollision();
+    boxCollisions();
     checkCylindersCollision();
-  }
-  
-  /**
-  This method calls the two possible axis of collision of the sphere with the borders of the box, collisionX and collisionZ.
-  */
-  void boxCollision(){
-    collisionX();
-    collisionZ();
   }
   
   /**
@@ -43,6 +41,7 @@ public class Sphere {
   */
   
   void checkCylindersCollision(){
+    
       List<Cylinder> cylinders = plate.cylinders;
       for(Cylinder c: cylinders){
          cylinderCollision(c);
@@ -54,6 +53,8 @@ public class Sphere {
       float dist = position.dist(c.position); // This vector is the distance center to center between the sphere and the cylinder.
       float minDist = radius + c.radius;
       if(abs(dist) <= abs(minDist)){  // If the distance between the two centers is smaller or equal to the sum of the radius, there is a collision
+        Game.addToScore(speed.mag());  
+      
         PVector n = new PVector(position.x - c.position.x, position.y - c.position.y);
         position = correctPosition(c, n, minDist);
         speed = bouncingSpeed(speed, n);
@@ -106,7 +107,10 @@ public class Sphere {
   }
   
   
-  void collisionX() {
+  void boxCollisions() {
+    boolean collisionX = true, collisionZ = true;
+    PVector oldSpeed = speed.copy();
+    
     if (position.x>plate.getSizeX()/2)
       {
        position.x=plate.getSizeX()/2;
@@ -114,12 +118,13 @@ public class Sphere {
      }
     else if (position.x<-plate.getSizeX()/2) 
       {
-        position.x=-plate.getSizeX()/2;
+       position.x=-plate.getSizeX()/2;
        speed.x*=(-bouncing);
      }
-  }
-  
-  void collisionZ() {
+     else {
+       collisionX = false; 
+     }
+    
     if (position.y>plate.getSizeZ()/2)
       {
         position.y=plate.getSizeZ()/2;
@@ -130,15 +135,22 @@ public class Sphere {
         position.y=-plate.getSizeZ()/2;
        speed.y*=(-bouncing);
      }
+     else {
+        collisionZ = false;
+     }
+     
+     if(collisionX || collisionZ) {
+       Game.addToScore(-oldSpeed.mag());
+     }
   }
       
   
   void render(PGraphics layer) {
     layer.pushMatrix();
-    layer.fill(00,66,255);
-    //We print it on the plate
-    layer.translate(position.x, -radius-0.5*plate.getSizeY(), position.y);
-    layer.sphere(radius);
+      layer.fill(00,66,255);
+      //We print it on the plate
+      layer.translate(position.x, -radius-0.5*plate.getSizeY(), position.y);
+      layer.sphere(radius);
     layer.popMatrix();
   }
 }

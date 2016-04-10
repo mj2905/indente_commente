@@ -8,6 +8,18 @@ private final float gravityConstant = 9.81 * 1/frameRate * 3; //Without the 3 : 
 private PGraphics gameGraphics;
 private PGraphics guiGraphics;
 private int guiHeight;
+private final float offset_gui = 10;
+private int guiElemSize;
+
+private PGraphics plateThumbGraphics;
+private float plateRatioThumb;
+
+private PGraphics scoreboardGraphics;
+private final float offset_scoreboard = 4;
+private final float offset_bet_lines = 20;
+
+private static float score = 0;
+
 
 
 void settings() {
@@ -16,32 +28,54 @@ void settings() {
 }
 
 void setup(){
-  frameRate(100);
+  //frameRate(100);
   guiHeight = height/4;
+  
   gameGraphics = createGraphics(width, height - guiHeight, P3D);
-  guiGraphics = createGraphics(width, guiHeight, P3D);
+  
+  gameGraphics.beginDraw();
+    gameGraphics.noStroke();
+  gameGraphics.endDraw();
+  
+  guiGraphics = createGraphics(width, guiHeight, P2D);  
+  
+  guiGraphics.beginDraw();
+    guiGraphics.background(#E6E2AF);
+  guiGraphics.endDraw();
   
   //To keep a ratio with the screen, avoiding a loss of the plate when in Shift mode
   int SIZE_X_Z = floor(min(gameGraphics.width, gameGraphics.height) * 5.0/6.0);
   plate = new Plate(SIZE_X_Z, SIZE_Y, SIZE_X_Z);
   
-  gameGraphics.beginDraw();
-    gameGraphics.noStroke();
-  gameGraphics.endDraw();
-
+  plateRatioThumb = SIZE_X_Z/(guiHeight - offset_gui);
   
+  guiElemSize = int(SIZE_X_Z/plateRatioThumb);
+  
+  
+  plateThumbGraphics = createGraphics(guiElemSize, guiElemSize, P2D);
+  
+  plateThumbGraphics.beginDraw();
+    plateThumbGraphics.background(100,0,0);
+    plateThumbGraphics.noStroke();
+  plateThumbGraphics.endDraw();
+  
+  
+  scoreboardGraphics = createGraphics(guiElemSize, guiElemSize, P2D);
+  
+  scoreboardGraphics.beginDraw();
+    scoreboardGraphics.noStroke();
+  scoreboardGraphics.endDraw();
   
 }
 
 void draw() {
   background(151, 185, 255);
        gameRender();
-       guiRender();
        
        image(gameGraphics, 0, 0);
-       image(guiGraphics, 0, height - guiHeight);
+       guiRender(0, height - guiHeight);
 }
-
+ //<>//
 void gameRender() {
    gameGraphics.beginDraw();
        gameGraphics.clear();
@@ -59,11 +93,12 @@ void gameRender() {
    gameGraphics.endDraw();
 }
 
-void guiRender() {
-  guiGraphics.beginDraw();
-    guiGraphics.clear();
-    guiGraphics.background(#996F3C);
-  guiGraphics.endDraw();
+void guiRender(int x, int y) {
+  image(guiGraphics, x, y);
+  plateThumbRender();
+  image(plateThumbGraphics, x+ offset_gui/2, y+offset_gui/2);
+  scoreboardRender();
+  image(scoreboardGraphics, x + offset_gui + guiElemSize + offset_gui/2, y + offset_gui/2);
 }
 
 /* For debug
@@ -75,7 +110,48 @@ void printLog(int x, int y) {
     text("Speed : " + plate.getSpeed(), x+800, y);
     text("SpeedSphere : " + plate.sphere.speed.x, x + 1000, y);
 }
-*/ //<>//
+*/
+
+void plateThumbRender() {
+  plateThumbGraphics.beginDraw();
+  
+    plateThumbGraphics.pushMatrix();
+      plateThumbGraphics.translate(int(plate.getSizeX()/plateRatioThumb)/2, int(plate.getSizeZ()/plateRatioThumb)/2);
+      
+      PVector positionSphere = plate.getSphere().getPosition();
+      PVector oldPositionSphere = plate.getSphere().getOldPosition();
+      float diameterSphereThumb = 2 * plate.getSphere().getRadius() / plateRatioThumb;
+      
+      plateThumbGraphics.fill(75,0,0);
+      plateThumbGraphics.ellipse(oldPositionSphere.x/plateRatioThumb, oldPositionSphere.y/plateRatioThumb, diameterSphereThumb, diameterSphereThumb);
+      plateThumbGraphics.fill(0,100,0);
+      plateThumbGraphics.ellipse(positionSphere.x/plateRatioThumb, positionSphere.y/plateRatioThumb, diameterSphereThumb, diameterSphereThumb);
+      
+      plateThumbGraphics.fill(0,0,100);
+      for(Cylinder c:plate.getCylinders()) {
+        PVector positionCylinder = c.getPosition();
+        float diameterCylinderThumb = 2*c.getRadius() / plateRatioThumb;
+        
+        plateThumbGraphics.ellipse(positionCylinder.x/plateRatioThumb, positionCylinder.y/plateRatioThumb, diameterCylinderThumb, diameterCylinderThumb);
+      }
+    plateThumbGraphics.popMatrix();
+  plateThumbGraphics.endDraw();
+  
+}
+
+void scoreboardRender() {
+ scoreboardGraphics.beginDraw();
+   scoreboardGraphics.pushMatrix();
+     scoreboardGraphics.background(#FFFFFF);
+     scoreboardGraphics.fill(#E6E2AF);
+     scoreboardGraphics.rect(offset_scoreboard,offset_scoreboard, guiElemSize - 2*offset_scoreboard, guiElemSize - 2*offset_scoreboard);
+     scoreboardGraphics.fill(#000000);
+     scoreboardGraphics.text("Total Score : ", 2*offset_scoreboard, 4*offset_scoreboard);
+     scoreboardGraphics.text(" " + score, 2* offset_scoreboard, 4*offset_scoreboard + offset_bet_lines);
+     
+   scoreboardGraphics.popMatrix();
+ scoreboardGraphics.endDraw();
+}
 
 void mouseClicked() {
      plate.addCylinder(gameGraphics);
@@ -101,4 +177,13 @@ void mouseDragged() {
 void mouseWheel(MouseEvent event) {
   float scroll = event.getCount();
   plate.setSpeed(plate.getSpeed() + scroll * plate.STEP_OF_SPEED);
+}
+
+public static void addToScore(float addToScore) {
+  if(score + addToScore < 0) {
+   score = 0; 
+  }
+  else {
+   score += addToScore;
+  }
 }
