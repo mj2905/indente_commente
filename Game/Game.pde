@@ -7,18 +7,19 @@ private final float gravityConstant = 9.81 * 1/frameRate * 3; //Without the 3 : 
 
 private PGraphics gameGraphics;
 private PGraphics guiGraphics;
-private final int guiHeight = height/4;
+private int guiHeight;
 
 
 void settings() {
- //fullScreen(P3D);
- size(800,600,P3D);
+ fullScreen(P3D);
+ //size(800,600,P3D);
 }
 
 void setup(){
   noStroke();
+  guiHeight = height/8;
   gameGraphics = createGraphics(width, height - guiHeight, P3D);
-  guiGraphics = createGraphics(width, guiHeight, P2D);
+  guiGraphics = createGraphics(width, guiHeight, P3D);
   
   //To keep a ratio with the screen, avoiding a loss of the plate when in Shift mode
   int SIZE_X_Z = floor(min(gameGraphics.width, gameGraphics.height) * 5.0/6.0);

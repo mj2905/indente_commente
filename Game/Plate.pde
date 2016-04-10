@@ -115,7 +115,7 @@ public class Plate {
   public void addCylinder(PGraphics layer) {
     if(!normalMode) {
       
-      if(mouseX > (layer.width - sizeX)/2 && mouseX < (layer.width + sizeX)/2 && mouseY > (layer.height - sizeZ)/2 && mouseY < (layer.height + sizeZ)/2) {
+      if(mouseX >= (layer.width - sizeX)/2 && mouseX <= (layer.width + sizeX)/2 && mouseY >= (layer.height - sizeZ)/2 && mouseY <= (layer.height + sizeZ)/2) {
               println("Hello");
               //If after we want to have cylinders with bigger radius to improve the game, we do this here.
               Cylinder cylinder = new Cylinder(this, new PVector((mouseX-layer.width/2), (mouseY-layer.height/2)));
