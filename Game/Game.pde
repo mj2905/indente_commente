@@ -2,45 +2,64 @@
 private final int SIZE_Y = 20;
 private Plate plate;
 //Distance of camera
-private final int DEPTH = 800;
+private final int DEPTH = -200;
 private final float gravityConstant = 9.81 * 1/frameRate * 3; //Without the 3 : too slow and unrealistic
+
+private PGraphics gameGraphics;
+private PGraphics guiGraphics;
+private final int guiHeight = height/4;
 
 
 void settings() {
- fullScreen(P3D);
+ //fullScreen(P3D);
+ size(800,600,P3D);
 }
 
 void setup(){
   noStroke();
+  gameGraphics = createGraphics(width, height - guiHeight, P3D);
+  guiGraphics = createGraphics(width, guiHeight, P2D);
+  
   //To keep a ratio with the screen, avoiding a loss of the plate when in Shift mode
-  int SIZE_X_Z = floor(min(height, width) * 5.0/6.0);
+  int SIZE_X_Z = floor(min(gameGraphics.width, gameGraphics.height) * 5.0/6.0);
   plate = new Plate(SIZE_X_Z, SIZE_Y, SIZE_X_Z);
+  
+  
 }
 
 void draw() {
-  
+  println(mouseY);
   background(151, 185, 255);
-  
-  /*
-  When shift is pressed, we set our plate to "upmode":
-    in upmode, the plate is drawn vertically and the sphere never updates and it is impossible to rotate the plate.
-    as such, it sort of simulates a pause (in order to avoid using noloop...)
-    The function plate.add(cylinder) is also enabled.
-  When SHIFT is released, we go back to "normal mode", the only changes being that we may now have a few cylinders.
-    possibility to rotate, and physics are back
-  */
-  
-  if (keyPressed && keyCode == SHIFT) {
-        camera(width/2, height/2, DEPTH, width/2, height/2, 0,0,1.0,0);
-        plate.upMode();
-  }
-  else {
-      // changes to the camera in order to see better what we are doing when angleX>0
-      camera(width/2, -height/8, DEPTH, width/2, height/2, 0,0,1.0,0); 
-      plate.normalMode();
-    }
-       translate(width/2, height/2, 0);
-       plate.render();
+       gameRender();
+       guiRender();
+       
+       image(gameGraphics, 0, 0);
+       image(guiGraphics, 0, height - guiHeight);
+}
+
+void gameRender() {
+   gameGraphics.beginDraw();
+       gameGraphics.clear();
+       gameGraphics.noStroke();
+       
+       if (keyPressed && keyCode == SHIFT) {
+          plate.upMode(gameGraphics);
+        }
+        else {
+      // changes to the camera in order to see better what we are doing when angleX>0 
+        plate.normalMode(gameGraphics);
+        }
+       
+       gameGraphics.translate(width/2, height/2, DEPTH);
+       plate.render(gameGraphics);
+   gameGraphics.endDraw();
+}
+
+void guiRender() {
+  guiGraphics.beginDraw();
+    guiGraphics.clear();
+    guiGraphics.background(#996F3C);
+  guiGraphics.endDraw();
 }
 
 /* For debug
@@ -54,8 +73,8 @@ void printLog(int x, int y) {
 }
 */
 
-void mouseClicked() {
- plate.addCylinder();
+void mouseClicked() { //<>//
+     plate.addCylinder(gameGraphics);
 }
 
 void mouseDragged() {

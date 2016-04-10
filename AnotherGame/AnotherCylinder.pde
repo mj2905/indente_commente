@@ -1,20 +1,19 @@
-public class Cylinder {
+public class AnotherCylinder{
   private final static float cylinderBaseSize = 50;
   private final static float cylinderBaseHeight = 50;
   private final static int cylinderBaseResolution = 40;
-  private Plate plate;
+  private AnotherPlate plate;
   private final float radius;
   private final PVector position;
   private PShape shape;
   private int cylinderResolution;
   private float cylinderHeight;
   
-  Cylinder(Plate plate, PVector position) {
-    this(plate, position, cylinderBaseSize, cylinderBaseHeight, cylinderBaseResolution);
+  AnotherCylinder(AnotherPlate plate, PVector position){
+     this(plate, position, cylinderBaseSize, cylinderBaseHeight, cylinderBaseResolution);
   }
   
-  Cylinder(Plate plate, PVector position, float r, float cylinderHeight, int cylinderResolution) {
-    
+  AnotherCylinder(AnotherPlate plate, PVector position, float r, float cylinderHeight, int cylinderResolution) {
     this.plate = plate;
     this.radius = r;
     this.cylinderResolution = cylinderResolution;
@@ -28,6 +27,7 @@ public class Cylinder {
     this.shape = group;
   }
   
+  
   private PShape openCylinder() {
     float angle = TWO_PI / cylinderResolution;
     float pAngle;
@@ -38,7 +38,7 @@ public class Cylinder {
     
     for(int i = 0; i < cylinderResolution+1; ++i) {
       pAngle = angle*i;
-      openCylinder.vertex(sin(pAngle) * radius,              0, cos(pAngle) * radius);
+      openCylinder.vertex(sin(pAngle) * radius, 0, cos(pAngle) * radius);
       openCylinder.vertex(sin(pAngle) * radius, cylinderHeight, cos(pAngle) * radius);
     }
     
@@ -64,13 +64,13 @@ public class Cylinder {
        
        //Each time we create a point in (sin(angle), height, cos(angle))
        
-       surface.vertex(sin(p1Angle) * radius,              0, cos(p1Angle) * radius);
-       surface.vertex(sin(p2Angle) * radius,              0, cos(p2Angle) * radius);
-       surface.vertex(                    0,              0,                     0);
+       surface.vertex(sin(p1Angle) * radius,0, cos(p1Angle) * radius);
+       surface.vertex(sin(p2Angle) * radius,0, cos(p2Angle) * radius);
+       surface.vertex(0,0,0);
        
        surface.vertex(sin(p1Angle) * radius, cylinderHeight, cos(p1Angle) * radius);      
        surface.vertex(sin(p2Angle) * radius, cylinderHeight, cos(p2Angle) * radius);
-       surface.vertex(                    0, cylinderHeight,                     0); 
+       surface.vertex(0, cylinderHeight,0); 
 
        
     }
@@ -79,13 +79,10 @@ public class Cylinder {
     return surface;
   }
   
-  void render(PGraphics layer) {
-    layer.pushMatrix();
-      layer.translate(position.x, - 0.5 * plate.sizeY - cylinderBaseHeight, position.y);
-      layer.shape(shape);
-    layer.popMatrix();
+  void render() {
+      pushMatrix();
+      translate(position.x, - 0.5 * plate.sizeY - cylinderBaseHeight, position.y);
+      shape(shape);
+      popMatrix();
   }
 }
-
-
-    

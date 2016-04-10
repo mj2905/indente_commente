@@ -90,9 +90,9 @@ public class Plate {
   //core of the class
   
   //upMode = mode in which we are in the top view, with an ortho camera (Shift mode)
-  public void upMode() {
+  public void upMode(PGraphics layer) {
     if (normalMode) {
-      ortho();
+      layer.ortho();
       modeRotXFreeze = rotationX;
       modeRotZFreeze = rotationZ;
       rotationX = -radians(90);
@@ -102,9 +102,9 @@ public class Plate {
   }
   
   //upMode = mode in which we are in normal view with a perspective camera
-  public void normalMode() {
+  public void normalMode(PGraphics layer) {
     if (!normalMode) {
-      perspective();
+      layer.perspective();
       rotationX = modeRotXFreeze;
       rotationZ = modeRotZFreeze;
       normalMode = true;
@@ -112,14 +112,14 @@ public class Plate {
   }
   
   //function to add a cylinder in the plate (not touching the ball and not touching another cylinder)
-  public void addCylinder() {
+  public void addCylinder(PGraphics layer) {
     if(!normalMode) {
       
-      if(mouseX > (width - sizeX)/2 && mouseX < (width + sizeX)/2 && mouseY > (height - sizeZ)/2 && mouseY < (height + sizeZ)/2) {
-        
+      if(mouseX > (layer.width - sizeX)/2 && mouseX < (layer.width + sizeX)/2 && mouseY > (layer.height - sizeZ)/2 && mouseY < (layer.height + sizeZ)/2) {
+              println("Hello");
               //If after we want to have cylinders with bigger radius to improve the game, we do this here.
-              Cylinder cylinder = new Cylinder(this, new PVector((mouseX-width/2), (mouseY-height/2)));
-              boolean isMouseInBall = (new PVector(mouseX - width/2, mouseY - height/2)).dist(sphere.getPosition()) < sphere.getRadius() + cylinder.radius;
+              Cylinder cylinder = new Cylinder(this, new PVector((mouseX-layer.width/2), (mouseY-layer.height/2)));
+              boolean isMouseInBall = (new PVector(mouseX - layer.width/2, mouseY - layer.height/2)).dist(sphere.getPosition()) < sphere.getRadius() + cylinder.radius;
               boolean isMouseInAnotherCylinder = false;
               for(Cylinder c : cylinders) {
                   isMouseInAnotherCylinder |= c.position.dist(cylinder.position) < c.radius + cylinder.radius;
@@ -132,22 +132,25 @@ public class Plate {
     }
   }
   
-  public void render() {
-      pushMatrix();
-      fill(133,123,227);
-      rotateX(rotationX);
-      rotateY(rotationY);
-      rotateZ(rotationZ);
-      box(sizeX,sizeY,sizeZ);
+  public void render(PGraphics layer) {
+      layer.pushMatrix();
+      layer.fill(133,123,227);
+      
       if (normalMode) {
-        //If we are in top mode, no update of the ball
+        layer.rotateX(-PI/6); //To see beter the plate
+        //If we are in normal mode, we update the ball
         sphere.update();
       }
-      sphere.render();
+      
+      layer.rotateX(rotationX);
+      layer.rotateY(rotationY);
+      layer.rotateZ(rotationZ);
+      layer.box(sizeX,sizeY,sizeZ);
+      sphere.render(layer);
       for(Cylinder c: cylinders) {
-         c.render(); 
+         c.render(layer); 
       }
-      popMatrix();
+      layer.popMatrix();
   }
   
   
