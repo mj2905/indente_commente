@@ -1,3 +1,6 @@
+import java.util.List;
+
+
 //Size of the plate
 private final int SIZE_Y = 20;
 private Plate plate;
@@ -16,9 +19,20 @@ private float plateRatioThumb;
 
 private PGraphics scoreboardGraphics;
 private final float offset_scoreboard = 4;
-private final float offset_bet_lines = 20;
+private float offset_bet_lines;
+
+private PGraphics barChart;
+private float widthSquareScore = 4;
+private float heightSquareScore = 4;
+private final float distanceBetSquares = 1;
+private float maxHeightScore = 0;
 
 private static float score = 0;
+private static float oldScore = 0;
+private float scoreToPrint = 0;
+
+private final List<Float> scores = new ArrayList();
+private final int scoresThreshold =  256;
 
 
 
@@ -66,6 +80,17 @@ void setup(){
     scoreboardGraphics.noStroke();
   scoreboardGraphics.endDraw();
   
+  offset_bet_lines = guiElemSize/8;
+  
+  
+  int barWidth = (int)(width - 3 * offset_gui - 2*guiElemSize);
+  barChart = createGraphics(barWidth, guiElemSize, P2D);
+  barChart.beginDraw();
+    barChart.background(#EFECCA);
+    barChart.fill(0,0,255);
+    barChart.noStroke();
+  barChart.endDraw();
+  
 }
 
 void draw() {
@@ -99,6 +124,8 @@ void guiRender(int x, int y) {
   image(plateThumbGraphics, x+ offset_gui/2, y+offset_gui/2);
   scoreboardRender();
   image(scoreboardGraphics, x + offset_gui + guiElemSize + offset_gui/2, y + offset_gui/2);
+  barChartRender();
+  image(barChart, x + 2*offset_gui + 2*guiElemSize + offset_gui/2, y + offset_gui/2);
 }
 
 /* For debug
@@ -114,7 +141,6 @@ void printLog(int x, int y) {
 
 void plateThumbRender() {
   plateThumbGraphics.beginDraw();
-  
     plateThumbGraphics.pushMatrix();
       plateThumbGraphics.translate(int(plate.getSizeX()/plateRatioThumb)/2, int(plate.getSizeZ()/plateRatioThumb)/2);
       
@@ -146,11 +172,67 @@ void scoreboardRender() {
      scoreboardGraphics.fill(#E6E2AF);
      scoreboardGraphics.rect(offset_scoreboard,offset_scoreboard, guiElemSize - 2*offset_scoreboard, guiElemSize - 2*offset_scoreboard);
      scoreboardGraphics.fill(#000000);
-     scoreboardGraphics.text("Total Score : ", 2*offset_scoreboard, 4*offset_scoreboard);
-     scoreboardGraphics.text(" " + score, 2* offset_scoreboard, 4*offset_scoreboard + offset_bet_lines);
+     scoreboardGraphics.text("Total Score : ",                           2*offset_scoreboard, 4*offset_scoreboard);
+     scoreboardGraphics.text(" " + score,                                2*offset_scoreboard, 4*offset_scoreboard + offset_bet_lines);
+     
+     scoreboardGraphics.text("Velocity : ",                              2*offset_scoreboard, 4*offset_scoreboard + 3*offset_bet_lines);
+     scoreboardGraphics.text(" " + plate.getSphere().getVelocity().mag(),2*offset_scoreboard, 4*offset_scoreboard + 4*offset_bet_lines);
+     
+     scoreboardGraphics.text("Last Score : ",                            2*offset_scoreboard, 4*offset_scoreboard + 6*offset_bet_lines);
+     scoreboardGraphics.text(" " + oldScore,                             2*offset_scoreboard, 4*offset_scoreboard + 7*offset_bet_lines);
      
    scoreboardGraphics.popMatrix();
  scoreboardGraphics.endDraw();
+}
+
+void barChartRender() {
+ if(scoreToPrint != score) {
+   barChart.beginDraw();
+   
+   if(maxHeightScore < score) {
+       maxHeightScore = score;
+   }
+   
+   addWithTreshold(score);
+   
+   barChart.background(#EFECCA);
+
+   int begin = max(0, (int)(scores.size() - barChart.width/widthSquareScore));
+   
+   barChart.fill(#0000FF);
+   for(int i = begin; i < scores.size(); ++i) {
+     int h = (int)((scores.get(i) / maxHeightScore) * barChart.height*0.9);
+     h -= h%heightSquareScore;
+     float x = (i-begin)*widthSquareScore;
+     float y = barChart.height - h;
+     
+     for(int j = 0; j < h; ++j) {
+       
+     }
+     
+     barChart.rect(x,y,widthSquareScore-distanceBetSquares, h);
+   }
+   
+   barChart.fill(#EFECCA);
+   for(int i = 0; i < barChart.height/heightSquareScore; ++i) {
+     barChart.rect(0, i*heightSquareScore, barChart.width, distanceBetSquares);
+   }
+   
+   
+
+    scoreToPrint = score;
+   
+   barChart.endDraw();
+ }
+  
+  
+}
+
+void addWithTreshold(float score) {
+ while(scores.size() >= scoresThreshold) {
+   scores.remove(0);
+ }
+ scores.add(score);
 }
 
 void mouseClicked() {
@@ -180,6 +262,7 @@ void mouseWheel(MouseEvent event) {
 }
 
 public static void addToScore(float addToScore) {
+  oldScore = score;
   if(score + addToScore < 0) {
    score = 0; 
   }

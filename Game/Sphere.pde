@@ -10,6 +10,7 @@ public class Sphere {
   private float attenuation = 0.95;
   
   private PVector oldPosition; //For data visualization
+  private boolean collision = false;
   
   
   Sphere(Plate plate, float r) {
@@ -28,6 +29,7 @@ public class Sphere {
   public PVector getPosition() { return position.copy(); }
   public PVector getOldPosition() { return oldPosition.copy(); }
   public float getRadius() { return radius; }
+  public PVector getVelocity() { return speed.copy(); }
   
   void update() {
     oldPosition = position.copy();
@@ -42,19 +44,22 @@ public class Sphere {
   
   void checkCylindersCollision(){
     
+      collision = false;
       List<Cylinder> cylinders = plate.cylinders;
       for(Cylinder c: cylinders){
          cylinderCollision(c);
       }
     
+      if(collision) {
+         Game.addToScore(speed.mag());   
+      }
   }
   
   void cylinderCollision(Cylinder c){
       float dist = position.dist(c.position); // This vector is the distance center to center between the sphere and the cylinder.
       float minDist = radius + c.radius;
       if(abs(dist) <= abs(minDist)){  // If the distance between the two centers is smaller or equal to the sum of the radius, there is a collision
-        Game.addToScore(speed.mag());  
-      
+        collision = true;
         PVector n = new PVector(position.x - c.position.x, position.y - c.position.y);
         position = correctPosition(c, n, minDist);
         speed = bouncingSpeed(speed, n);
