@@ -87,16 +87,18 @@ class HScrollbar {
    * @brief Draws the scrollbar in its current state
    */ 
   void display() {
-    noStroke();
-    fill(204);
-    rect(xPosition, yPosition, barWidth, barHeight);
-    if (mouseOver || locked) {
-      fill(0, 0, 0);
-    }
-    else {
-      fill(102, 102, 102);
-    }
-    rect(sliderPosition, yPosition, barHeight, barHeight);
+
+      noStroke();
+      fill(204);
+      rect(xPosition, yPosition, barWidth, barHeight);
+      if (mouseOver || locked) {
+        fill(0, 0, 0);
+      }
+      else {
+        fill(102, 102, 102);
+      }
+      rect(sliderPosition, yPosition, barHeight, barHeight);
+
   }
 
   /**

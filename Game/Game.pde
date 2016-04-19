@@ -24,7 +24,8 @@ private float offset_bet_lines;
 private PGraphics barChart;
 private float widthSquareScore = 4;
 private float heightSquareScore = 4;
-private final float distanceBetSquares = 1;
+private final float squareScoreUnit = 5;
+private float distanceBetSquares = 1;
 private float maxHeightScore = 0;
 
 private static float score = 0;
@@ -33,6 +34,9 @@ private float scoreToPrint = 0;
 
 private final List<Float> scores = new ArrayList();
 private final int scoresThreshold =  256;
+
+private HScrollbar scrollBar;
+private final int size_slider = 20;
 
 
 
@@ -84,12 +88,14 @@ void setup(){
   
   
   int barWidth = (int)(width - 3 * offset_gui - 2*guiElemSize);
-  barChart = createGraphics(barWidth, guiElemSize, P2D);
+  barChart = createGraphics(barWidth, guiElemSize-2*size_slider, P2D);
   barChart.beginDraw();
     barChart.background(#EFECCA);
     barChart.fill(0,0,255);
     barChart.noStroke();
   barChart.endDraw();
+  
+  scrollBar = new HScrollbar(2*offset_gui + 2*guiElemSize + offset_gui/2, height - guiHeight + offset_gui + barChart.height,barWidth,size_slider);
   
 }
 
@@ -97,6 +103,7 @@ void draw() {
   background(151, 185, 255);
        gameRender();
        
+       scrollBar.update();
        image(gameGraphics, 0, 0);
        guiRender(0, height - guiHeight);
 }
@@ -126,6 +133,8 @@ void guiRender(int x, int y) {
   image(scoreboardGraphics, x + offset_gui + guiElemSize + offset_gui/2, y + offset_gui/2);
   barChartRender();
   image(barChart, x + 2*offset_gui + 2*guiElemSize + offset_gui/2, y + offset_gui/2);
+  scrollBar.update();
+  scrollBar.display();
 }
 
 /* For debug
@@ -186,40 +195,42 @@ void scoreboardRender() {
 }
 
 void barChartRender() {
- if(scoreToPrint != score) {
+ 
+ float oldWidth = widthSquareScore;
+ widthSquareScore = 3 + 2*scrollBar.getPos();
+  
+ if(scoreToPrint != score || oldWidth != widthSquareScore) {
    barChart.beginDraw();
    
    if(maxHeightScore < score) {
        maxHeightScore = score;
+       if(heightSquareScore > 1) {
+         while(barChart.height < maxHeightScore / squareScoreUnit * (heightSquareScore + distanceBetSquares)) {
+            heightSquareScore/=2;
+         }
+       }
    }
    
    addWithTreshold(score);
    
    barChart.background(#EFECCA);
 
-   int begin = max(0, (int)(scores.size() - barChart.width/widthSquareScore));
+   int begin = max(0, (int)(scores.size() - barChart.width/widthSquareScore + 10));
    
    barChart.fill(#0000FF);
+   
+   float x = 0;
+   
    for(int i = begin; i < scores.size(); ++i) {
-     int h = (int)((scores.get(i) / maxHeightScore) * barChart.height*0.9);
-     h -= h%heightSquareScore;
-     float x = (i-begin)*widthSquareScore;
-     float y = barChart.height - h;
+     float y = barChart.height - heightSquareScore;
      
-     for(int j = 0; j < h; ++j) {
-       
+     for(float hei = scores.get(i); hei > 0; hei -= squareScoreUnit) {
+       barChart.rect(x, y, widthSquareScore - distanceBetSquares, heightSquareScore);
+       y-=(heightSquareScore + distanceBetSquares);
      }
      
-     barChart.rect(x,y,widthSquareScore-distanceBetSquares, h);
+     x += widthSquareScore;
    }
-   
-   barChart.fill(#EFECCA);
-   for(int i = 0; i < barChart.height/heightSquareScore; ++i) {
-     barChart.rect(0, i*heightSquareScore, barChart.width, distanceBetSquares);
-   }
-   
-   
-
     scoreToPrint = score;
    
    barChart.endDraw();
@@ -240,20 +251,21 @@ void mouseClicked() {
 }
 
 void mouseDragged() {
-  if (plate.normalMode) {
-    if(mouseY - pmouseY > 0) {
-        plate.setRotX(plate.getRotX() - plate.getSpeed());
-    } else if(mouseY - pmouseY < 0) {
-        plate.setRotX(plate.getRotX() + plate.getSpeed());
+   if(mouseY < gameGraphics.height) {
+    if (plate.normalMode) {
+      if(mouseY - pmouseY > 0) {
+          plate.setRotX(plate.getRotX() - plate.getSpeed());
+      } else if(mouseY - pmouseY < 0) {
+          plate.setRotX(plate.getRotX() + plate.getSpeed());
+      }
+      
+      if(mouseX - pmouseX > 0) {
+          plate.setRotZ(plate.getRotZ() + plate.getSpeed());
+      } else if(mouseX - pmouseX < 0) {
+          plate.setRotZ(plate.getRotZ() - plate.getSpeed());
+      }
     }
-    
-    if(mouseX - pmouseX > 0) {
-        plate.setRotZ(plate.getRotZ() + plate.getSpeed());
-    } else if(mouseX - pmouseX < 0) {
-        plate.setRotZ(plate.getRotZ() - plate.getSpeed());
-    }
-  }
-
+   }
 }
 
 void mouseWheel(MouseEvent event) {
