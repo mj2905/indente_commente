@@ -45,57 +45,62 @@ void settings() {
  //size(800,600,P3D);
 }
 
-void setup(){
-  //frameRate(100);
-  guiHeight = height/4;
-  
+
+void GUIandGameGraphics(){
   gameGraphics = createGraphics(width, height - guiHeight, P3D);
-  
+  guiGraphics = createGraphics(width, guiHeight, P2D); 
   gameGraphics.beginDraw();
     gameGraphics.noStroke();
   gameGraphics.endDraw();
   
-  guiGraphics = createGraphics(width, guiHeight, P2D);  
-  
   guiGraphics.beginDraw();
     guiGraphics.background(#E6E2AF);
   guiGraphics.endDraw();
+}
+
+void setup(){
+  //frameRate(100);
+  guiHeight = height/4;
+  
+  GUIandGameGraphics();
   
   //To keep a ratio with the screen, avoiding a loss of the plate when in Shift mode
   int SIZE_X_Z = floor(min(gameGraphics.width, gameGraphics.height) * 5.0/6.0);
-  plate = new Plate(SIZE_X_Z, SIZE_Y, SIZE_X_Z);
-  
   plateRatioThumb = SIZE_X_Z/(guiHeight - offset_gui);
-  
   guiElemSize = int(SIZE_X_Z/plateRatioThumb);
+  offset_bet_lines = guiElemSize/8;
+  int barWidth = (int)(width - 3 * offset_gui - 2*guiElemSize);
   
+  ScoreBarChartAndThumbDraw(barWidth);
+  plateAndScrollBarCreator(SIZE_X_Z,  barWidth);
   
+}
+
+
+void plateAndScrollBarCreator(int SIZE_X_Z, int barWidth){
+  plate = new Plate(SIZE_X_Z, SIZE_Y, SIZE_X_Z);
+  scrollBar = new HScrollbar(2*offset_gui + 2*guiElemSize + offset_gui/2, height - guiHeight + offset_gui + barChart.height,barWidth,size_slider);
+}
+
+void ScoreBarChartAndThumbDraw(int barWidth){
   plateThumbGraphics = createGraphics(guiElemSize, guiElemSize, P2D);
+  scoreboardGraphics = createGraphics(guiElemSize, guiElemSize, P2D);
+  barChart = createGraphics(barWidth, guiElemSize-2*size_slider, P2D);
   
   plateThumbGraphics.beginDraw();
     plateThumbGraphics.background(100,0,0);
     plateThumbGraphics.noStroke();
   plateThumbGraphics.endDraw();
   
-  
-  scoreboardGraphics = createGraphics(guiElemSize, guiElemSize, P2D);
-  
   scoreboardGraphics.beginDraw();
     scoreboardGraphics.noStroke();
   scoreboardGraphics.endDraw();
-  
-  offset_bet_lines = guiElemSize/8;
-  
-  
-  int barWidth = (int)(width - 3 * offset_gui - 2*guiElemSize);
-  barChart = createGraphics(barWidth, guiElemSize-2*size_slider, P2D);
+
   barChart.beginDraw();
     barChart.background(#EFECCA);
     barChart.fill(0,0,255);
     barChart.noStroke();
   barChart.endDraw();
-  
-  scrollBar = new HScrollbar(2*offset_gui + 2*guiElemSize + offset_gui/2, height - guiHeight + offset_gui + barChart.height,barWidth,size_slider);
   
 }
 
