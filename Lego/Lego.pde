@@ -60,6 +60,11 @@ void draw() {
  
 }
 
+
+/***************
+** Utility methods
+****************/
+
 PImage hue(PImage img, int min, int max, PImage result) {
  //PImage result = createImage(img.width, img.height, ALPHA);
  result.loadPixels();
@@ -99,11 +104,13 @@ PImage filterBinaryInverted(PImage result) {
   return result;
 }
 
-PImage convolute(PImage img) {
-float[][] kernel = { { 0, 1, 0 },
-                    { 1, 0, 1 },
-                    { 0, 1, 0 }};
 
+/**********************
+** Convolution methods
+***********************/
+
+
+PImage convolution(PImage img, float[][] kernel) {
   float weight = 4f;
   // create a greyscale image (type: ALPHA) for output
  // PImage result = createImage(img.width, img.height, ALPHA);
@@ -115,9 +122,23 @@ float[][] kernel = { { 0, 1, 0 },
       }
     }
   result.updatePixels();
- 
-return result;
+
+  return result;
 }
+
+
+PImage convolute(PImage img) {
+  float[][] kernel = { { 0, 1, 0 },
+                      { 1, 0, 1 },
+                      { 0, 1, 0 }};
+  return convolution(img, kernel);
+}
+
+PImage gaussianConvolute(PImage img){
+  float[][] kernel = { {9,12,9},{12,15,12}, {9,12,9}};
+  return convolution(img, kernel);
+}
+
 
 color maskValue(int i, int j, float[][] mask, float weight, PImage img) {
         int r=0, g=0, b=0;
@@ -140,6 +161,12 @@ color maskValue(int i, int j, float[][] mask, float weight, PImage img) {
         
       return color(r, g, b);
 }
+
+
+/*********************
+** Sobel method
+**********************/
+
 
 PImage sobel(PImage img) {
   float[][] hKernel = { { 0,  1, 0 },
