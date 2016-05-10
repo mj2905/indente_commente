@@ -31,6 +31,10 @@ int neighbourhood;
     edges=new ArrayList<PVector>();
   }
   
+  public void updateImage(PImage image) {
+    this.img=image;
+  }
+  
   public ArrayList<Integer> fillCandidates() {
     for (int accR = 0; accR < rDim; accR++) {
     for (int accPhi = 0; accPhi < phiDim; accPhi++) {
@@ -137,7 +141,12 @@ int neighbourhood;
     return intersections;
   }
   
-  public void updateAndDraw() {
+  public void updateAndDraw(PImage img) {
+    bestCandidates=new ArrayList<Integer>();
+    edges=new ArrayList<PVector>();
+    accumulator = new int[(phiDim+2) * (rDim +2)];
+    updateImage(img);
+    fillAccumulator();
     fillCandidates();
     fillEdges();
     drawEdges();
