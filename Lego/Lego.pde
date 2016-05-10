@@ -1,21 +1,8 @@
   private PImage img;
   private PImage result;
-  private PImage aux;
-  private final int MAX_THRESHOLD = 255;
   private int THRESHOLD = 128;
-  private int PREVIOUS_THRESHOLD = 128;
   //private HScrollbar scrollBar;
-  private HScrollbar scrollBarHueMin;
-  private HScrollbar scrollBarHueMax;
-  private int imageHeight;
-  private final int scrollBarHeight = 20;
-  private final int offsetScrollBar = 5;
-  
-  private float oldScrollBarHuePosMin = 0;
-  private float oldScrollBarHuePosMax = 0;
-  
-  private int min = 0;
-  private int max = 255;
+
   
   
   void settings() { 
@@ -23,50 +10,43 @@
   }
   
   void setup() {
-    imageHeight = height - 2*scrollBarHeight - 3*offsetScrollBar;
-   img = loadImage("board1.jpg");
-   result = createImage(width, height, RGB);
-   aux = createImage(width, height, RGB);
-   
-   //scrollBar = new HScrollbar(0, imageHeight + offsetScrollBar, width, scrollBarHeight);
-   scrollBarHueMin = new HScrollbar(0, imageHeight + offsetScrollBar , width, scrollBarHeight);
-   scrollBarHueMax = new HScrollbar(0, imageHeight + 2*offsetScrollBar + scrollBarHeight, width, scrollBarHeight);
-   //noLoop(); // no interactive behaviour: draw() will be called only once.
+   img = loadImage("board4.jpg");
+   result = createImage(width, height, ALPHA);
+   noLoop();
   }
   
   void draw() {
    background(0);
-   image(result, 0, 0, width, height);
+   result = sobel(thresholdLowValues(img));
    
-   scrollBarHueMin.update();
-   scrollBarHueMin.display();
-   scrollBarHueMax.update();
-   scrollBarHueMax.display();
-   
-   if(scrollBarHueMin.getPos() != oldScrollBarHuePosMin) {
-    min = (int)(255*scrollBarHueMin.getPos());
-    oldScrollBarHuePosMin = scrollBarHueMin.getPos();
-    hue(img, min, max, result);
-    convolute(result);
-    sobel(result);
-   }
-   else if(scrollBarHueMax.getPos() != oldScrollBarHuePosMax) {
-    max = (int)(255*scrollBarHueMax.getPos());
-    oldScrollBarHuePosMax = scrollBarHueMax.getPos();
-    hue(img, min, max, result);
-    convolute(result);
-    sobel(result);
-   }
-   
+   image(result, 0, 0);
   }
   
+  PImage thresholdLowValues(PImage image) {
+   PImage resultImage = createImage(image.width,image.height,ALPHA);
+   
+   for(int i=0; i < resultImage.width; ++i) {
+      for(int j=0; j < resultImage.height; ++j) {
+        //25 80
+          if(brightness(image.pixels[i + j*resultImage.width]) < 25 || saturation(image.pixels[i + j*resultImage.width]) < 80) {
+             resultImage.pixels[i + j * resultImage.width] =  color(0);
+          }
+          else {
+             float hue = hue(image.pixels[i + j*resultImage.width]);
+             //95 140
+              resultImage.pixels[i + j * resultImage.width] =  (hue >= 95  && hue <= 139) ? color(255) : color(0);
+          }
+      }
+   }
+   return resultImage;
+  }
   
   /***************
   ** Utility methods
   ****************/
   
   PImage hue(PImage img, int min, int max, PImage result) {
-   //PImage result = createImage(img.width, img.height, ALPHA);
+
    result.loadPixels();
     for(int i=0; i < img.width* img.height; ++i) {
         int hue = (int)hue(img.pixels[i]);
@@ -110,56 +90,42 @@
   ***********************/
   
   
-  PImage convolution(PImage img, float[][] kernel) {
-    float weight = 4f;
+  PImage convolution(PImage image, float[][] kernel, float weight) {
     // create a greyscale image (type: ALPHA) for output
-   // PImage result = createImage(img.width, img.height, ALPHA);
+    PImage resultImage = createImage(image.width, image.height, ALPHA);
     
-    result.loadPixels();
-      for(int i=1; i < img.width-1; ++i) {
-        for(int j=1; j < img.height-1; ++j) {
-          result.pixels[j*img.width + i] = maskValue(i, j, kernel, weight,  img);
+      for(int i=1; i < image.width-1; ++i) {
+        for(int j=1; j < image.height-1; ++j) {
+          resultImage.pixels[i + j * image.width] = (maskValue(i, j, kernel, weight, image));
         }
       }
-    result.updatePixels();
   
-    return result;
+    return resultImage;
   }
   
   
-  PImage convolute(PImage img) {
+  PImage convolute(PImage image) {
     float[][] kernel = { { 0, 1, 0 },
                         { 1, 0, 1 },
                         { 0, 1, 0 }};
-    return convolution(img, kernel);
+    return convolution(image, kernel, 4);
   }
   
-  PImage gaussianConvolute(PImage img){
+  PImage gaussianConvolute(PImage image){
     float[][] kernel = { {9,12,9},{12,15,12}, {9,12,9}};
-    return convolution(img, kernel);
+    return convolution(image, kernel, 110);
   }
   
   
-  color maskValue(int i, int j, float[][] mask, float weight, PImage img) {
-          int r=0, g=0, b=0;
+  int maskValue(int i, int j, float[][] mask, float weight, PImage image) {
+
+          float bright = 0;
           for(int x=-1; x <=1; ++x) {
             for(int y=-1; y <=1; ++y) {
-                color c = img.get(i+x, j+y);
-                r += ((c >> 16) & 0xFF) * mask[x+1][y+1];
-                g += ((c >> 8) & 0xFF) * mask[x+1][y+1];
-                b += (c & 0xFF) * mask[x+1][y+1];
+                bright += brightness(image.pixels[i+x + (j+y) * image.width]) * mask[x+1][y+1];
             }  
           }
-          
-          r=(int) (r/weight);
-          g=(int) (g/weight);
-          b= (int) (b/weight);
-          
-          r = (r>255) ? 255 : r;
-          g = (g>255) ? 255 : g;
-          b = (b>255) ? 255 : b;
-          
-        return color(r, g, b);
+        return color((int)(bright/weight));
   }
   
   
@@ -168,87 +134,53 @@
   **********************/
   
   
-  PImage sobel(PImage img) {
+  PImage sobel(PImage image) {
     float[][] hKernel = { { 0,  1, 0 },
                           { 0,  0, 0 },
                           { 0, -1, 0 } };
     float[][] vKernel = { { 0,  0,  0 },
                           { 1,  0, -1 },
                           { 0,  0,  0  } };
-    //PImage result = createImage(img.width, img.height, ALPHA);
-    result.loadPixels();
-    // clear the image
-    /*for (int i = 0; i < img.width * img.height; i++) {
-      result.pixels[i] = color(0);
-    }*/
+    PImage resultImage = createImage(image.width, image.height, ALPHA);
     
     color sumh = color(0);
     color sumv = color(0);
     color sum = color(0);
     
     float max=0;
-    float[] buffer = new float[img.width * img.height];
+    float[] buffer = new float[image.width * image.height];
     // *************************************
     // Implement here the double convolution
     // *************************************
-    for (int y = 2; y < img.height - 2; y++) {
+    for (int y = 2; y < image.height - 2; y++) {
     // Skip top and bottom edges
-      for (int x = 2; x < img.width - 2; x++) {
+      for (int x = 2; x < image.width - 2; x++) {
         // Skip left and right
         
-        sumh = maskValue(x,y,hKernel,1, img);
-        sumv = maskValue(x,y,vKernel,1, img);
+        sumh = maskValue(x,y,hKernel,1, image);
+        sumv = maskValue(x,y,vKernel,1, image);
         
         sum = (int)(sqrt(pow(brightness(sumh),2) + pow(brightness(sumv),2)));
         //sum = (int)(sqrt(pow(sumh,2) + pow(sumv ,2)));
-        buffer[x + y*img.width] = sum;
+        buffer[x + y*image.width] = sum;
         
         max = max(max, sum);
       }
     }
     
-    for (int y = 2; y < img.height - 2; y++) {
+    for (int y = 2; y < image.height - 2; y++) {
     // Skip top and bottom edges
-      for (int x = 2; x < img.width - 2; x++) {
+      for (int x = 2; x < image.width - 2; x++) {
         // Skip left and right
         
-        if (buffer[y * img.width + x] > (int)(max * 0.3f)) {
+        if (buffer[x + y * image.width] > (int)(max * 0.3f)) {
           // 30% of the max
-          result.pixels[y * img.width + x] = color(255);
+          resultImage.pixels[x + y * image.width] =  color(255);
           } 
         else {
-          result.pixels[y * img.width + x] = color(0);
+          resultImage.pixels[x + y * image.width] = color(0);
         }
       }
     }
-  result.updatePixels();
-  return result;
-}
-
-
-void hough(PImage edgeImg) {
-  float discretizationStepsPhi = 0.06f;
-  float discretizationStepsR = 2.5f;
-  
-    // dimensions of the accumulator
-  int phiDim = (int) (PI / discretizationStepsPhi);
-  int rDim = (int) (((edgeImg.width + edgeImg.height) * 2 + 1) / discretizationStepsR);
-  // our accumulator (with a 1 pix margin around)
-  int[] accumulator = new int[(phiDim + 2) * (rDim + 2)];
-  // Fill the accumulator: on edge points (ie, white pixels of the edge
-  // image), store all possible (r, phi) pairs describing lines going
-  // through the point.
-  for (int y = 0; y < edgeImg.height; y++) {
-    for (int x = 0; x < edgeImg.width; x++) {
-      // Are we on an edge?
-      if (brightness(edgeImg.pixels[y * edgeImg.width + x]) != 0) {
-        // ...determine here all the lines (r, phi) passing through
-        // pixel (x,y), convert (r,phi) to coordinates in the
-        // accumulator, and increment accordingly the accumulator.
-        // Be careful: r may be negative, so you may want to center onto
-        // the accumulator with something like: r += (rDim - 1) / 2
-      }
-    }
-  }
-  
+  return resultImage;
 }
