@@ -1,7 +1,11 @@
+  import processing.video.*;
+  
   private PImage img;
   private PImage result;
   private int THRESHOLD = 128;
-  //private HScrollbar scrollBar;
+  
+  private Capture cam;
+  private PImage cameraImg;
 
   
   
@@ -11,15 +15,33 @@
   
   void setup() {
    img = loadImage("board4.jpg");
-   result = createImage(width, height, ALPHA);
-   noLoop();
+   //noLoop();
+   
+   String[] cameras = Capture.list();
+   if(cameras.length == 0){
+    println("No camera available");
+    exit();
+   }else{
+      println("Available cameras:");
+     for(int i = 0; i <cameras.length; i++){
+        println(cameras[i]); 
+     } 
+     cam = new Capture(this, cameras[0]);
+     cam.start();
+   }
   }
   
   void draw() {
    background(0);
-   result = sobel(thresholdLowValues(img));
+   //result = sobel(thresholdLowValues(img));
    
-   image(result, 0, 0);
+     if(cam.available() == true){
+         cam.read(); 
+         cameraImg = cam.get();
+         image(sobel(thresholdLowValues(cameraImg)),0,0);
+     }
+     
+   //image(result, 0, 0);
   }
   
   PImage thresholdLowValues(PImage image) {
