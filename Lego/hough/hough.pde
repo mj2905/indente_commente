@@ -7,6 +7,9 @@ class houghTransform {
  private int rDim;
  
  private PImage img;
+
+ private int centerX;
+ private int centerY;
  
  private int[] accumulator;
  
@@ -20,9 +23,14 @@ class houghTransform {
    discretizationStepsPhi = (float)Math.PI/ maxPhi;
    discretizationStepsR = 2.5f;
    
+   
+   
    numPoints = 0;
    
    img = edgeImg;
+   
+   centerX = img.width/2;
+   centerY = img.height/2;
    
    phiDim = (int) (Math.PI/discretizationStepsPhi);
    rDim = (int) (((img.width + img.height)*2 +1)/discretizationStepsR);
