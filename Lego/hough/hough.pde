@@ -14,6 +14,7 @@ class houghTransform {
  
  
  private PImage img;
+ private PImage houghImg;
 
  private int centerX;
  private int centerY;
@@ -50,7 +51,7 @@ class houghTransform {
         cosCache[i] = Math.cos(phi);
    }
    
-   
+   houghImg = createImage(rDim +2, phiDim +2, ALPHA);
  }
  
  int[] getAccumulator(){
@@ -80,5 +81,59 @@ class houghTransform {
    }
    img.updatePixels();
  }
+  
+  void display(){
+    houghImg.loadPixels();
+     for(int i = 0; i < accumulator.length; i++){
+       houghImg.pixels[i] = color(min(255, accumulator[i]));
+     }
+     
+     houghImg.resize(400,400);
+     houghImg.updatePixels();
+  }
+  
+  void drawLines(){
+     for(int idx = 0; idx < accumulator.length; idx++){
+       if(accumulator[idx] > 200){
+         int accPhi = (int) (idx / (rDim +2)) -1 ;
+         int accR = idx - (accPhi + 1) * (rDim +2) -1;
+         float r = (accR - (rDim -1) * 0.5f)*discretizationStepsR;
+         float phi = accPhi * discretizationStepsPhi;
+         
+         int x0 = 0;
+         int y0 = (int) (r/sin(phi));
+         int x1 = (int) (r/cos(phi));
+         int y1 = 0;
+         int x2 = img.width;
+         int y2 = (int) (-cos(phi) / sin(phi) *x2 + r/sin(phi));
+         int y3 = img.width;
+         int x3 = (int) (-(y3 - r/sin(phi)) * (sin(phi)/cos(phi)));
+         
+         stroke(204,102,0);
+         if(y0 > 0){
+           if(x1 > 0){
+             line(x0,y0,x1,y1);
+           }else if(y2 >0){
+             line(x0,y0,x2,y2);
+           }else{
+              line(x0,y0, x3,y3); 
+           }
+           
+         }else{
+          if(x1>0){
+             if(y2 >0){
+                line(x1,y1,x2,y2); 
+             }else{
+                line(x1,y1,x3,y3); 
+             }
+            
+          } else{ 
+            line(x2,y2,x3,y3);
+          } 
+         }
+       }
+     }
+    
+  }
   
 }
