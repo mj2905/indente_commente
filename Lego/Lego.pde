@@ -43,7 +43,9 @@
      //HoughCorner h = new HoughCorner(result, 3, 6, 4);
      houghTransform h = new houghTransform(result);
      h.fillAccumulator();
-     image(h.imageToDisplay(),0,0);
+     PImage imgtemp = h.imageToDisplay();
+     //h.drawLines();
+     image(imgtemp,0,0);
    //image(result, 0, 0);
   }
   

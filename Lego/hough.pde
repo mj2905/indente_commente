@@ -4,6 +4,7 @@ class houghTransform {
 
   // L'indice de palliers de phi et l'indice de palliers de R (pour passer d'un rayon continu à un rayon discret, on va devoir tronquer nos cases)
   final private float discretizationStepsPhi = (float)Math.PI / maxPhi; 
+  final private float discretizationStepsR = 2.5f;
 
   private PImage img;
   private PImage houghImg;
@@ -64,7 +65,12 @@ class houghTransform {
       }
   }
 
+  void setImage(PImage secondImg){
+      this.img = secondImg;
+  }
+  
   void fillAccumulator() {
+    accumulator = new int[(maxPhi+2) * (doubleHeight +2 )];
     img.loadPixels();
     int r = 0;
     for (int y = 0; y < img.height; ++y) {
@@ -76,6 +82,8 @@ class houghTransform {
     }
     img.updatePixels();
   }
+  
+  
   PImage imageToDisplay(){
     houghImg.loadPixels();
     for (int i = 0; i < accumulator.length; i++) {
@@ -86,7 +94,7 @@ class houghTransform {
     houghImg.updatePixels();
     return houghImg;
   }
-
+/* muda muda muda muda
   void display() {
     houghImg.loadPixels();
     for (int i = 0; i < accumulator.length; i++) {
@@ -95,14 +103,14 @@ class houghTransform {
 
     houghImg.resize(400, 400);
     houghImg.updatePixels();
-  }
-/* À mettre à jour
+  }*/
+/* À mettre à jour*//*
   void drawLines() {
     for (int idx = 0; idx < accumulator.length; idx++) {
       if (accumulator[idx] > 200) {
-        int accPhi = (int) (idx / (rDim +2)) -1 ;
-        int accR = idx - (accPhi + 1) * (rDim +2) -1;
-        float r = (accR - (rDim -1) * 0.5f)*discretizationStepsR;
+        int accPhi = (int) (idx / (doubleHeight +2)) -1 ;
+        int accR = idx - (accPhi + 1) * (doubleHeight +2) -1;
+        float r = (accR - (doubleHeight -1) * 0.5f)*discretizationStepsR;
         float phi = accPhi * discretizationStepsPhi;
 
         int x0 = 0;
