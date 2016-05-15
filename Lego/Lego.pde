@@ -33,19 +33,20 @@
   
   void draw() {
    background(0);
-   //result = sobel(thresholdLowValues(img));
-   
+   result = sobel(thresholdLowValues(img));
+   /*
      if(cam.available() == true){
          cam.read(); 
          cameraImg = cam.get();
-         result = sobel(thresholdLowValues(cameraImg));
-         houghTransform h = new houghTransform(result);
-         h.fillAccumulator();
-         image(h.imageToDisplay(),0,0);
-         //image(result, 0, 0);
-     }
-     //HoughCorner h = new HoughCorner(result, 3, 6, 4);
-
+         image(sobel(thresholdLowValues(cameraImg)),0,0);
+     }*/
+     //HoughCorner h = new HoughCorner(result, 10, 100, 10);
+     //h.updateAndDraw(result);
+     houghTransform h = new houghTransform(result);
+     h.fillAccumulator();
+     image(result,0,0);
+     h.drawLines();
+     //image(h.imageToDisplay(),0,0);
    //image(result, 0, 0);
   }
   
