@@ -1,56 +1,56 @@
 import java.util.*;
 
-class HoughCorner extends houghTransform {
+class HoughCorner {
   
   // size of the region we search for a local maximum
 int neighbourhood;
 // only search around lines with more that this amount of votes
 // (to be adapted to your image)
   
- private float discretizationStepsPhi; 
- private float discretizationStepsR;
+  private houghTransform hough;
  
- private int phiDim;
- private int rDim;
+ private float discretizationStepsR = 2.5f;
  
- private PImage img;
+ private int rDim = (int) (((img.width + img.height)*2 +1)/discretizationStepsR);
  
- private int[] accumulator;
+ 
   private int minVotes;
   private int nLines;
   private ArrayList<Integer> bestCandidates;
   private ArrayList<PVector> edges;
   
   public HoughCorner(PImage edgeImg, int minvotes, int nlines, int neighbour) {
-    super(edgeImg);
+    hough= new houghTransform(edgeImg);
     minVotes=minvotes;
     nLines=nlines;
-    fillAccumulator();
+    hough.fillAccumulator();
     neighbourhood=neighbour;
     bestCandidates=new ArrayList<Integer>();
     edges=new ArrayList<PVector>();
   }
   
-  public void updateImage(PImage image) {
-    this.img=image;
-  }
+  /*public void updateImage(PImage image) {
+    this.hough.img=image;
+  }*/
   
   public ArrayList<Integer> fillCandidates() {
+    bestCandidates=new ArrayList<Integer>();
+    hough.fillAccumulator();
     for (int accR = 0; accR < rDim; accR++) {
-    for (int accPhi = 0; accPhi < phiDim; accPhi++) {
+    for (int accPhi = 0; accPhi < hough.maxPhi; accPhi++) {
         // compute current index in the accumulator
         int idx = (accPhi + 1) * (rDim + 2) + accR + 1;
-        if (accumulator[idx] > minVotes) {
+        if (hough.accumulator[idx] > minVotes) {
         boolean bestCandidate=true;
         // iterate over the neighbourhood
         for(int dPhi=-neighbourhood/2; dPhi < neighbourhood/2+1; dPhi++) {
           // check we are not outside the image
-          if( accPhi+dPhi < 0 || accPhi+dPhi >= phiDim) continue;
+          if( accPhi+dPhi < 0 || accPhi+dPhi >= hough.maxPhi) continue;
           for(int dR=-neighbourhood/2; dR < neighbourhood/2 +1; dR++) {
               // check we are not outside the image
                 if(accR+dR < 0 || accR+dR >= rDim) continue;
                 int neighbourIdx = (accPhi + dPhi + 1) * (rDim + 2) + accR + dR + 1;
-                if(accumulator[idx] < accumulator[neighbourIdx]) {
+                if(hough.accumulator[idx] < hough.accumulator[neighbourIdx]) {
                   // the current idx is not a local maximum!
                   bestCandidate=false;
                   break;
@@ -65,24 +65,25 @@ int neighbourhood;
         }
       }
     }
-    Collections.sort(bestCandidates, new HoughComparator(accumulator));
+    Collections.sort(bestCandidates, new HoughComparator(hough.accumulator));
     return bestCandidates;
   }
   
   public ArrayList<PVector> fillEdges() {
-    for(int i=0; (i<bestCandidates.size()||(i<nLines)); ++i) {
+    edges=new ArrayList<PVector>();
+    for(int i=0; (i<bestCandidates.size()&&(i<nLines)); ++i) {
       int idx=bestCandidates.get(i);
       int accPhi = (int) (idx / (rDim + 2)) - 1;
       int accR = idx - (accPhi + 1) * (rDim + 2) - 1;
       float r = (accR - (rDim - 1) * 0.5f) * discretizationStepsR;
-      float phi = accPhi * discretizationStepsPhi;
+      float phi = accPhi * hough.discretizationStepsPhi;
       edges.add(new PVector(r, phi));
     }
     return edges;
   }
   
   public void drawEdges() {
-    for(int i=0; (i<edges.size()||(i<nLines)); ++i) {
+    for(int i=0; (i<edges.size()&&(i<nLines)); ++i) {
       float r = edges.get(i).x;
       float phi = edges.get(i).y;
       // Cartesian equation of a line: y = ax + b
@@ -142,11 +143,11 @@ int neighbourhood;
   }
   
   public void updateAndDraw(PImage img) {
-    bestCandidates=new ArrayList<Integer>();
-    edges=new ArrayList<PVector>();
-    accumulator = new int[(phiDim+2) * (rDim +2)];
-    updateImage(img);
-    fillAccumulator();
+    image(img, 0,0);
+    
+    
+    hough= new houghTransform(img);
+    //hough.fillAccumulator();
     fillCandidates();
     fillEdges();
     drawEdges();

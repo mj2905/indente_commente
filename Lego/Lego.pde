@@ -40,10 +40,13 @@
          cameraImg = cam.get();
          image(sobel(thresholdLowValues(cameraImg)),0,0);
      }*/
-     //HoughCorner h = new HoughCorner(result, 3, 6, 4);
+     //HoughCorner h = new HoughCorner(result, 10, 100, 10);
+     //h.updateAndDraw(result);
      houghTransform h = new houghTransform(result);
      h.fillAccumulator();
-     image(h.imageToDisplay(),0,0);
+     image(result,0,0);
+     h.drawLines();
+     //image(h.imageToDisplay(),0,0);
    //image(result, 0, 0);
   }
   

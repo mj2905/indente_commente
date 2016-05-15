@@ -66,6 +66,7 @@ class houghTransform {
 
   void fillAccumulator() {
     img.loadPixels();
+    accumulator = new int[(maxPhi+2) * (doubleHeight +2 )];
     int r = 0;
     for (int y = 0; y < img.height; ++y) {
       for (int x = 0; x < img.width; ++x) {
@@ -96,10 +97,12 @@ class houghTransform {
     houghImg.resize(400, 400);
     houghImg.updatePixels();
   }
-/* À mettre à jour
+/*À mettre à jour*/
   void drawLines() {
+    float discretizationStepsR = 2.5f;
+    int rDim = (int) (((img.width + img.height)*2 +1)/discretizationStepsR);
     for (int idx = 0; idx < accumulator.length; idx++) {
-      if (accumulator[idx] > 200) {
+      if (accumulator[idx] > 20) {
         int accPhi = (int) (idx / (rDim +2)) -1 ;
         int accR = idx - (accPhi + 1) * (rDim +2) -1;
         float r = (accR - (rDim -1) * 0.5f)*discretizationStepsR;
@@ -136,5 +139,6 @@ class houghTransform {
         }
       }
     }
-  }*/
+  }
+  
 }
