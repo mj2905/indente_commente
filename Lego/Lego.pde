@@ -16,7 +16,7 @@
   void setup() {
    img = loadImage("board1.jpg");
    //noLoop();
-   /*
+   
    String[] cameras = Capture.list();
    if(cameras.length == 0){
     println("No camera available");
@@ -26,24 +26,26 @@
      for(int i = 0; i <cameras.length; i++){
         println(cameras[i]); 
      } 
-     cam = new Capture(this, cameras[11]);
+     cam = new Capture(this, cameras[0]);
      cam.start();
-   }*/
+   }
   }
   
   void draw() {
    background(0);
-   result = sobel(thresholdLowValues(img));
-   /*
+   //result = sobel(thresholdLowValues(img));
+   
      if(cam.available() == true){
          cam.read(); 
          cameraImg = cam.get();
-         image(sobel(thresholdLowValues(cameraImg)),0,0);
-     }*/
+         result = sobel(thresholdLowValues(cameraImg));
+         houghTransform h = new houghTransform(result);
+         h.fillAccumulator();
+         image(h.imageToDisplay(),0,0);
+         //image(result, 0, 0);
+     }
      //HoughCorner h = new HoughCorner(result, 3, 6, 4);
-     houghTransform h = new houghTransform(result);
-     h.fillAccumulator();
-     image(h.imageToDisplay(),0,0);
+
    //image(result, 0, 0);
   }
   

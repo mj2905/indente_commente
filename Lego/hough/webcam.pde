@@ -1,5 +1,5 @@
-class houghCam{
  import processing.video.*;
+class houghCam{
  
  Capture cam;
  PImage img;
@@ -32,4 +32,3 @@ class houghCam{
  }
   
   
-}
