@@ -2,7 +2,7 @@
   
   private PImage img;
   private PImage result;
-  private int THRESHOLD = 165;
+  private int THRESHOLD = 185; //165
   
   private Capture cam;
   private PImage cameraImg;
@@ -13,9 +13,9 @@
   }
   
   void setup() {
-   img = loadImage("board1.jpg");
+   img = loadImage("board4.jpg");
    //noLoop();
-   /*
+   
    String[] cameras = Capture.list();
    if(cameras.length == 0){
     println("No camera available");
@@ -28,7 +28,7 @@
      cam = new Capture(this, cameras[0]);
      cam.start();
    }
-   */
+   
   }
   
   void draw() {
@@ -45,7 +45,6 @@
      houghTransform h = new houghTransform(result);
      h.fillAccumulator();
      //PImage imgtemp = h.imageToDisplay();
-
      image(result,0,0);
      h.drawLines();
    //image(result, 0, 0);
@@ -196,7 +195,7 @@
   
   PImage gaussianConvolute(PImage image){
     float[][] kernel = { {9,12,9},{12,15,12}, {9,12,9}};
-    return convolution(image, kernel, 110);
+    return convolution(image, kernel, 99);
   }
   
   
