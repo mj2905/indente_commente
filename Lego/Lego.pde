@@ -2,12 +2,11 @@
   
   private PImage img;
   private PImage result;
-  private int THRESHOLD = 128;
+  private int THRESHOLD = 165;
   
   private Capture cam;
   private PImage cameraImg;
 
-  
   
   void settings() { 
     size(800,600);
@@ -26,14 +25,16 @@
      for(int i = 0; i <cameras.length; i++){
         println(cameras[i]); 
      } 
-     cam = new Capture(this, cameras[11]);
+     cam = new Capture(this, cameras[0]);
      cam.start();
-   }*/
+   }
+   */
   }
   
   void draw() {
    background(0);
-   result = sobel(thresholdLowValues(img));
+   
+   result = sobel(filterBinaryMutable(gaussianConvolute(thresholdBrightnessSaturationHue(img)), THRESHOLD));
    /*
      if(cam.available() == true){
          cam.read(); 
@@ -43,24 +44,23 @@
      //HoughCorner h = new HoughCorner(result, 3, 6, 4);
      houghTransform h = new houghTransform(result);
      h.fillAccumulator();
-     PImage imgtemp = h.imageToDisplay();
-     //h.drawLines();
-     image(imgtemp,0,0);
+     //PImage imgtemp = h.imageToDisplay();
+
+     image(result,0,0);
+     h.drawLines();
    //image(result, 0, 0);
   }
   
-  PImage thresholdLowValues(PImage image) {
+  PImage thresholdBrightnessSaturationHue(PImage image) {
    PImage resultImage = createImage(image.width,image.height,ALPHA);
    
    for(int i=0; i < resultImage.width; ++i) {
       for(int j=0; j < resultImage.height; ++j) {
-        //25 80
           if(brightness(image.pixels[i + j*resultImage.width]) < 25 || saturation(image.pixels[i + j*resultImage.width]) < 80) {
              resultImage.pixels[i + j * resultImage.width] =  color(0);
           }
           else {
              float hue = hue(image.pixels[i + j*resultImage.width]);
-             //95 140
               resultImage.pixels[i + j * resultImage.width] =  (hue >= 95  && hue <= 139) ? color(255) : color(0);
           }
       }
@@ -68,47 +68,103 @@
    return resultImage;
   }
   
+  PImage thresholdBrightnessSaturationHueMutable(PImage image) {
+   
+   for(int i=0; i < image.width; ++i) {
+      for(int j=0; j < image.height; ++j) {
+          if(brightness(image.pixels[i + j*image.width]) < 25 || saturation(image.pixels[i + j*image.width]) < 80) {
+             image.pixels[i + j * image.width] =  color(0);
+          }
+          else {
+             float hue = hue(image.pixels[i + j*image.width]);
+              image.pixels[i + j * image.width] =  (hue >= 95  && hue <= 139) ? color(255) : color(0);
+          }
+      }
+   }
+   return image;
+  }
+  
   /***************
   ** Utility methods
   ****************/
   
-  PImage hue(PImage img, int min, int max, PImage result) {
+  PImage hue(PImage image, int min, int max) {
+   PImage resultImage = createImage(image.width,image.height,ALPHA);
 
-   result.loadPixels();
-    for(int i=0; i < img.width* img.height; ++i) {
-        int hue = (int)hue(img.pixels[i]);
-        result.pixels[i] = (hue >= min && hue <= max) ? img.pixels[i] : color(0);
+    for(int i=0; i < image.width* image.height; ++i) {
+        float hue = hue(image.pixels[i]);
+        resultImage.pixels[i] = (hue >= min && hue <= max) ? image.pixels[i] : color(0);
     }
-   result.updatePixels();
-   return result;
+
+   return resultImage;
   }
   
-  void filterBinary() {
-    result.loadPixels();
-    for(int i=0; i < img.width* img.height; ++i) {
-      if(brightness(img.pixels[i]) >= THRESHOLD) {
-        result.pixels[i] = color(255);
+  PImage hueMutable(PImage image, int min, int max) {
+
+    for(int i=0; i < image.width* image.height; ++i) {
+        float hue = hue(image.pixels[i]);
+        image.pixels[i] = (hue >= min && hue <= max) ? image.pixels[i] : color(0);
+    }
+
+   return image;
+  }
+  
+  PImage filterBinary(PImage image, float threshold) {
+    PImage resultImage = createImage(image.width,image.height,ALPHA);
+
+    for(int i=0; i < image.width* image.height; ++i) {
+      if(brightness(image.pixels[i]) >= threshold) {
+        resultImage.pixels[i] = color(255);
       }
       else {
-        result.pixels[i] = color(0); 
+        resultImage.pixels[i] = color(0); 
       }
     }
-    result.updatePixels();
-  }
-  
-  PImage filterBinaryInverted(PImage result) {
     
-    result.loadPixels();
-    for(int i=0; i < result.width * result.height; ++i) {
-      if(brightness(result.pixels[i]) < THRESHOLD) {
-        result.pixels[i] = color(255);
+    return resultImage;
+  }
+  
+  PImage filterBinaryMutable(PImage image, float threshold) {
+
+    for(int i=0; i < image.width* image.height; ++i) {
+      if(brightness(image.pixels[i]) >= threshold) {
+        image.pixels[i] = color(255);
       }
       else {
-        result.pixels[i] = color(0); 
+        image.pixels[i] = color(0); 
+      }
+    }
+    
+    return image;
+  }
+  
+  PImage filterBinaryInverted(PImage image, float threshold) {
+    PImage resultImage = createImage(image.width,image.height,ALPHA);
+
+    for(int i=0; i < image.width * image.height; ++i) {
+      if(brightness(image.pixels[i]) < threshold) {
+        resultImage.pixels[i] = color(255);
+      }
+      else {
+        resultImage.pixels[i] = color(0); 
       }
     }  
-    result.updatePixels();
-    return result;
+
+    return resultImage;
+  }
+  
+  PImage filterBinaryInvertedMutable(PImage image, float threshold) {
+
+    for(int i=0; i < image.width * image.height; ++i) {
+      if(brightness(image.pixels[i]) < threshold) {
+        image.pixels[i] = color(255);
+      }
+      else {
+        image.pixels[i] = color(0); 
+      }
+    }  
+
+    return image;
   }
   
   
