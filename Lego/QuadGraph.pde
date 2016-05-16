@@ -25,6 +25,9 @@ class QuadGraph {
           // TODO
           // fill the graph using intersect() to check if two lines are
           // connected in the graph.
+          
+          graph[idx][0] = i;
+          graph[idx][1] = j;
 
           idx++;
         }
@@ -71,6 +74,28 @@ class QuadGraph {
       System.out.println(s);
     }
     return cycles;
+  }
+  
+  void test(List<int[]> quads) {
+    for (int[] quad : quads) {
+      PVector l1 = lines.get(quad[0]);
+      PVector l2 = lines.get(quad[1]);
+      PVector l3 = lines.get(quad[2]);
+      PVector l4 = lines.get(quad[3]);
+      // (intersection() is a simplified version of the
+      // intersections() method you wrote last week, that simply
+      // return the coordinates of the intersection between 2 lines)
+      PVector c12 = intersection(l1, l2);
+      PVector c23 = intersection(l2, l3);
+      PVector c34 = intersection(l3, l4);
+      PVector c41 = intersection(l4, l1);
+      // Choose a random, semi-transparent colour
+      Random random = new Random();
+      fill(color(min(255, random.nextInt(300)),
+      min(255, random.nextInt(300)),
+      min(255, random.nextInt(300)), 50));
+      quad(c12.x,c12.y,c23.x,c23.y,c34.x,c34.y,c41.x,c41.y);
+    }
   }
 
   void findNewCycles(int[] path)

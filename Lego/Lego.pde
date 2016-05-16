@@ -29,12 +29,18 @@
      cam.start();
    }
    
+   result = sobel(filterBinaryMutable(gaussianConvolute(thresholdBrightnessSaturationHue(img)), THRESHOLD));
+   houghTransform h = new houghTransform(result);
+   h.fillAccumulator();
+   
+   
+   
   }
   
   void draw() {
    background(0);
    
-   result = sobel(filterBinaryMutable(gaussianConvolute(thresholdBrightnessSaturationHue(img)), THRESHOLD));
+   
    /*
      if(cam.available() == true){
          cam.read(); 
@@ -42,12 +48,14 @@
          image(sobel(thresholdLowValues(cameraImg)),0,0);
      }*/
      //HoughCorner h = new HoughCorner(result, 3, 6, 4);
-     houghTransform h = new houghTransform(result);
-     h.fillAccumulator();
+     //houghTransform h = new houghTransform(result);
+     //h.fillAccumulator();
      //PImage imgtemp = h.imageToDisplay();
-     image(result,0,0);
-     h.drawLines();
+     //image(result,0,0);
+     //h.drawLines();
    //image(result, 0, 0);
+  }
+    
   }
   
   PImage thresholdBrightnessSaturationHue(PImage image) {
@@ -87,7 +95,7 @@
   ** Utility methods
   ****************/
   
-  PImage hue(PImage image, int min, int max) {
+  PImage hueImage(PImage image, int min, int max) {
    PImage resultImage = createImage(image.width,image.height,ALPHA);
 
     for(int i=0; i < image.width* image.height; ++i) {
@@ -98,7 +106,7 @@
    return resultImage;
   }
   
-  PImage hueMutable(PImage image, int min, int max) {
+  PImage hueImageMutable(PImage image, int min, int max) {
 
     for(int i=0; i < image.width* image.height; ++i) {
         float hue = hue(image.pixels[i]);
