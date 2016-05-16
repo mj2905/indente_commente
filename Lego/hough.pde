@@ -10,20 +10,22 @@ class houghTransform {
   private PImage houghImg;
 
   // Les coordonnées du centre de l'image
-  private float centerX, centerY;
+   float centerX, centerY;
 
   // L'accumulateur, qui stocke une ligne (phi, r) à l'indice phi*rMax + r.
-  private int[] accumulator;
+   int[] accumulator;
   
   // La hauteur de l'accumulateur
-  private int houghHeight;
+   int houghHeight;
 
   // On double la hauteur pour prendre les valeurs négatives en plus.
-  private int doubleHeight, width, height;
+   int doubleHeight, width, height;
 
   // On stocke les valeurs de phi possibles, pour gagner des perf'
-  private double[] sinCache;
-  private double[] cosCache;
+   double[] sinCache;
+   double[] cosCache;
+
+  private boolean accEmpty;
 
   public houghTransform(PImage edgeImg) {
     img = edgeImg;
@@ -47,7 +49,7 @@ class houghTransform {
         sinCache[i] = Math.sin(phi);
         cosCache[i] = Math.cos(phi);
     }
-
+    accEmpty = true;
     houghImg = createImage(doubleHeight +2, maxPhi +2, ALPHA);
   }
   
@@ -61,6 +63,7 @@ class houghTransform {
         r = (int) (((x - centerX) * cosCache[i]) + ((y-centerY) * sinCache[i]));
         r += houghHeight;
         if(r < 0 || r > doubleHeight) continue;
+        accEmpty = false;
         accumulator[i * doubleHeight + r] += 1;
       }
   }
@@ -73,6 +76,7 @@ class houghTransform {
     //accumulator = new int[(maxPhi+2) * (doubleHeight +2 )];
     img.loadPixels();
     accumulator = new int[(maxPhi+2) * (doubleHeight +2 )];
+    accEmpty = true;
     int r = 0;
     for (int y = 0; y < img.height; ++y) {
       for (int x = 0; x < img.width; ++x) {
@@ -94,6 +98,18 @@ class houghTransform {
     houghImg.updatePixels();
     return houghImg;
   }
+  
+  public boolean accumulatorEmpty(){
+     return accEmpty; 
+  }
+  
+  public float getCenterX(){
+     return centerX; 
+  }
+
+  public float getCenterY(){
+     return centerY; 
+  }
 
   public void drawLines(){
     for(int i = 0; i < maxPhi; ++i){
@@ -109,13 +125,13 @@ class houghTransform {
              // Hence:
            
               int x0 = 0;
-              int y0 = (int) ((r+ centerX* cosCache[i] - houghHeight)/sinCache[i] + centerY); //
+              int y0 = (int) ((r+ centerX* cosCache[i] - houghHeight)/sinCache[i] + centerY);
               int x1 = (int) ((r + centerY*sinCache[i] - houghHeight)/ cosCache[i] + centerX);
               int y1 = 0;
               int x2 = img.width;
-              int y2 = (int) ((r - centerX* cosCache[i] - houghHeight)/sinCache[i] + centerY);  //(-cos(phi) / sin(phi) *x2 + trueR/sin(phi));
+              int y2 = (int) ((r - centerX* cosCache[i] - houghHeight)/sinCache[i] + centerY);  
               int y3 = img.width;
-              int x3 = (int) ((r- houghHeight - centerY*sinCache[i])/ cosCache[i] + centerX);//(-(y3 - trueR/sin(phi)) * (sin(phi)/cos(phi)));
+              int x3 = (int) ((r- houghHeight - centerY*sinCache[i])/ cosCache[i] + centerX);
       
               stroke(204, 102, 0);
               if (y0 > 0) {

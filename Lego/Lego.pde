@@ -30,21 +30,23 @@
    }*/
    
    result = sobel(filterBinaryMutable(gaussianConvolute(thresholdBrightnessSaturationHue(img)), THRESHOLD));
-   HoughCorner h = new HoughCorner(result, 200, 4, 10);
-   h.fillCandidates();
+   //HoughCorner h = new HoughCorner(result, 200, 4, 10);
+   //h.fillCandidates();
    image(result, 0, 0);
-   List<PVector> points = h.getIntersections(h.fillEdges());
-   println(points);
+   //List<PVector> points = h.getIntersections(h.fillEdges());
+   /*println(points);
       fill(255,0,0);
    for(PVector point : points) {
      ellipse(point.x, point.y, 100, 100);
-   }
+   }*/
    
-   
+   //houghCandidates h3  = new houghCandidates(result, 200, 4, 10);
   }
   
   void draw() {
    //background(0);
+     houghCandidates h3  = new houghCandidates(result, 200, 200, 10);
+
    
    
    /*
@@ -59,7 +61,9 @@
      //PImage imgtemp = h.imageToDisplay();
      //image(result,0,0);
      //h.drawLines();
-   //image(result, 0, 0);
+      image(result, 0, 0);
+      h3.drawEdges();
+      
   //}
     
   }
