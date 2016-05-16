@@ -57,6 +57,27 @@ class QuadGraph {
     else
       return false;
   }
+  
+  List<PVector[]> bestCycles(List<PVector> lines, List<int[]> cycles, float max_area, float min_area) {
+    
+    List<PVector[]> bestCycles = new ArrayList();
+    
+    for(int i = 0; i < cycles.size(); ++i) {
+      
+      PVector l0 = lines.get(cycles.get(i)[0]);
+      PVector l1 = lines.get(cycles.get(i)[1]);
+      PVector l2 = lines.get(cycles.get(i)[2]);
+      PVector l3 = lines.get(cycles.get(i)[3]);
+      
+      if(isConvex(l0, l1, l2, l3)
+          && validArea(l0, l1, l2, l3, max_area, min_area)
+          && !nonFlatQuad(l0, l1, l2, l3)){
+        bestCycles.add(new PVector[]{l0, l1, l2, l3});
+      }
+    }
+    
+    return bestCycles;
+  }
 
   List<int[]> findCycles() {
 
@@ -75,7 +96,7 @@ class QuadGraph {
     }
     return cycles;
   }
-  
+  /*
   void test(List<int[]> quads) {
     for (int[] quad : quads) {
       PVector l1 = lines.get(quad[0]);
@@ -97,7 +118,7 @@ class QuadGraph {
       quad(c12.x,c12.y,c23.x,c23.y,c34.x,c34.y,c41.x,c41.y);
     }
   }
-
+  */
   void findNewCycles(int[] path)
   {
     int n = path[0];
@@ -129,6 +150,8 @@ class QuadGraph {
           }
         }
   }
+  
+  
 
   //  check of both arrays have same lengths and contents
   Boolean equals(int[] a, int[] b)
@@ -278,7 +301,7 @@ class QuadGraph {
 
     float area = Math.abs(0.5f * (i1 + i2 + i3 + i4));
 
-    //System.out.println(area);
+    System.out.println(area);
 
     boolean valid = (area < max_area && area > min_area);
 

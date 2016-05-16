@@ -13,9 +13,9 @@
   }
   
   void setup() {
-   img = loadImage("board4.jpg");
+   img = loadImage("board1.jpg");
    //noLoop();
-   
+   /*
    String[] cameras = Capture.list();
    if(cameras.length == 0){
     println("No camera available");
@@ -27,18 +27,24 @@
      } 
      cam = new Capture(this, cameras[0]);
      cam.start();
-   }
+   }*/
    
    result = sobel(filterBinaryMutable(gaussianConvolute(thresholdBrightnessSaturationHue(img)), THRESHOLD));
-   houghTransform h = new houghTransform(result);
-   h.fillAccumulator();
-   
+   HoughCorner h = new HoughCorner(result, 200, 4, 10);
+   h.fillCandidates();
+   image(result, 0, 0);
+   List<PVector> points = h.getIntersections(h.fillEdges());
+   println(points);
+      fill(255,0,0);
+   for(PVector point : points) {
+     ellipse(point.x, point.y, 100, 100);
+   }
    
    
   }
   
   void draw() {
-   background(0);
+   //background(0);
    
    
    /*
@@ -54,7 +60,7 @@
      //image(result,0,0);
      //h.drawLines();
    //image(result, 0, 0);
-  }
+  //}
     
   }
   

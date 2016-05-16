@@ -23,7 +23,7 @@ int neighbourhood;
     hough= new houghTransform(edgeImg);
     minVotes=minvotes;
     nLines=nlines;
-    hough.fillAccumulator();
+    //hough.fillAccumulator();
     neighbourhood=neighbour;
     bestCandidates=new ArrayList<Integer>();
     edges=new ArrayList<PVector>();
