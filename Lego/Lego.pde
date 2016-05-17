@@ -1,4 +1,5 @@
   import processing.video.*;
+  import java.util.*;
   
   private PImage img;
   private PImage result;
@@ -30,9 +31,25 @@
    }*/
    
    result = sobel(filterBinaryMutable(gaussianConvolute(thresholdBrightnessSaturationHue(img)), THRESHOLD));
-   //HoughCorner h = new HoughCorner(result, 200, 4, 10);
+   houghCandidates h = new houghCandidates(result, 200, 100, 10);
    //h.fillCandidates();
    image(result, 0, 0);
+   QuadGraph quadgraph = new QuadGraph();
+   h.drawEdges();
+   List<PVector> linesCartesian = new ArrayList(h.getCartesianLines());
+   
+   quadgraph.build(linesCartesian,width, height);
+   List<PVector[]> bestOfCyclesCartesian = new ArrayList(quadgraph.bestCycles(linesCartesian, quadgraph.findCycles(),0,0));
+   
+   List<PVector> bestLinesPolar = new ArrayList();
+   for(PVector[] cycleCartesian : bestOfCyclesCartesian) {
+       for(PVector cartesianLine : cycleCartesian) {
+          bestLinesPolar.add(h.cartesianToPolar.get(cartesianLine));
+          //println(linesCartesian.get(i));
+       }
+   }
+   //println(bestLines);
+   h.drawEdges(bestLinesPolar);
    //List<PVector> points = h.getIntersections(h.fillEdges());
    /*println(points);
       fill(255,0,0);
@@ -61,8 +78,8 @@
      //PImage imgtemp = h.imageToDisplay();
      //image(result,0,0);
      //h.drawLines();
-      image(result, 0, 0);
-      h3.updateAndDraw(result);
+      //image(result, 0, 0);
+      //h3.updateAndDraw(result);
 
       
   //}
