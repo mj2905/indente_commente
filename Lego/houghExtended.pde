@@ -36,6 +36,53 @@ class houghCandidates extends houghTransform{
   }
   
   
+  public void drawEdges(List<PVector> lines){
+     for(int a=0; (a<lines.size()&&(a<nbLines)); ++a) {
+     //  println("pool");
+       // Pas de stress, les valeurs r et i stockées sont bel et bien des entiers, cf fillLines()
+        int r = (int) lines.get(a).x;
+        int i = (int) lines.get(a).y;
+      
+        // r = (x - centerX)*cos(phi) + (y-yc)*sin(phi) + houghHeight
+        // x = 0 => y = ( r + centerX * cos(phi) - houghHeight)/ sin(phi) + centerY
+        // y = 0 => x = ( r + centerY * sin(phi) - houghHeight)/ cos(phi) + centerY
+        // x = img.width <=> x = 2*centerX
+        // y = img.width <=> y = 2*centerY
+        // Hence:
+     
+        int x0 = 0;
+        int y0 = (int) ((r+ centerX* cosCache[i] - houghHeight)/sinCache[i] + centerY);
+        int x1 = (int) ((r + centerY*sinCache[i] - houghHeight)/ cosCache[i] + centerX);
+        int y1 = 0;
+        int x2 = img.width;
+        int y2 = (int) ((r - centerX* cosCache[i] - houghHeight)/sinCache[i] + centerY);
+        int y3 = img.width;
+        int x3 = (int) ((r- houghHeight - centerY*sinCache[i])/ cosCache[i] + centerX);
+        //println("x0 : " + x0 + ", x1:" + x1 + ", x2 : "+ x2 + ", x3 : " + x3);
+        //println("y0 : " + y0 + ", y1 : " + y1 + ", y2 :" + y2 + ", y3 : "+ y3);
+        stroke(204, 102, 0);
+        if (y0 > 0) {
+          if (x1 > 0) {
+            line(x0, y0, x1, y1);
+          } else if (y2 >0) {
+            line(x0, y0, x2, y2);
+          } else {
+            line(x0, y0, x3, y3);
+          }
+        } else {
+          if (x1>0) {
+            if (y2 >0) {
+              line(x1, y1, x2, y2);
+            } else {
+              line(x1, y1, x3, y3);
+            }
+          } else { 
+            line(x2, y2, x3, y3);
+          }
+        }
+     }
+  }
+  
   public void drawEdges(){
      bestCandidates = bestCandidates();
      fillLines();
@@ -148,8 +195,8 @@ class houghCandidates extends houghTransform{
         int y = (int) ((-(line2.x)*cos(line1.y) + (line1.x)*cos(line2.y))/d);
         intersections.add(new PVector(x, y));
         // draw the intersection
-        //fill(255, 128, 0);
-        //ellipse(x, y, 10, 10);
+        fill(255, 128, 0);
+        ellipse(x, y, 10, 10);
       }
     }
     return intersections;

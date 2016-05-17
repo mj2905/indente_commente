@@ -1,6 +1,4 @@
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 import java.util.ArrayList;
 
 class QuadGraph {
@@ -21,7 +19,6 @@ class QuadGraph {
     for (int i = 0; i < lines.size(); i++) {
       for (int j = i + 1; j < lines.size(); j++) {
         if (intersect(lines.get(i), lines.get(j), width, height)) {
-
           // TODO
           // fill the graph using intersect() to check if two lines are
           // connected in the graph.
@@ -58,9 +55,9 @@ class QuadGraph {
       return false;
   }
   
-  List<PVector[]> bestCycles(List<PVector> lines, List<int[]> cycles, float max_area, float min_area) {
+  Set<PVector> bestCycles(List<PVector> lines, List<int[]> cycles, float max_area, float min_area) {
     
-    List<PVector[]> bestCycles = new ArrayList();
+    Set<PVector> bestCycles = new HashSet();
     
     for(int i = 0; i < cycles.size(); ++i) {
       
@@ -70,9 +67,12 @@ class QuadGraph {
       PVector l3 = lines.get(cycles.get(i)[3]);
       
       if(isConvex(l0, l1, l2, l3)
-          && validArea(l0, l1, l2, l3, max_area, min_area)
+          //&& validArea(l0, l1, l2, l3, max_area, min_area)
           && !nonFlatQuad(l0, l1, l2, l3)){
-        bestCycles.add(new PVector[]{l0, l1, l2, l3});
+        bestCycles.add(l0);
+        bestCycles.add(l1);
+        bestCycles.add(l2);
+        bestCycles.add(l3);
       }
     }
     

@@ -1,4 +1,5 @@
   import processing.video.*;
+  import java.util.*;
   
   private PImage img;
   private PImage result;
@@ -30,9 +31,16 @@
    }*/
    
    result = sobel(filterBinaryMutable(gaussianConvolute(thresholdBrightnessSaturationHue(img)), THRESHOLD));
-   //HoughCorner h = new HoughCorner(result, 200, 4, 10);
+   houghCandidates h = new houghCandidates(result, 200, 100, 10);
    //h.fillCandidates();
    image(result, 0, 0);
+   QuadGraph quadgraph = new QuadGraph();
+   List<PVector> lines = h.createLines();
+   println(lines);
+   quadgraph.build(lines,width, height);
+   println(quadgraph.findCycles());
+   List<PVector> bestOfCycles = new ArrayList(quadgraph.bestCycles(lines, quadgraph.findCycles(),0,0));
+   h.drawEdges(bestOfCycles);
    //List<PVector> points = h.getIntersections(h.fillEdges());
    /*println(points);
       fill(255,0,0);
@@ -45,7 +53,7 @@
   
   void draw() {
    //background(0);
-     houghCandidates h3  = new houghCandidates(result, 200, 200, 10);
+     //houghCandidates h3  = new houghCandidates(result, 200, 200, 10);
 
    
    
@@ -61,8 +69,8 @@
      //PImage imgtemp = h.imageToDisplay();
      //image(result,0,0);
      //h.drawLines();
-      image(result, 0, 0);
-      h3.drawEdges();
+      //image(result, 0, 0);
+      //h3.drawEdges();
       
   //}
     
