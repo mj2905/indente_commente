@@ -33,6 +33,9 @@ class houghCandidates extends houghTransform{
      return lines;
   }
   
+  public ArrayList<PVector> getCartesianLines(){
+     return cartesianLines; 
+  }
   
   public void drawEdges(){
      candidates();
