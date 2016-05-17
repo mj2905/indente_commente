@@ -29,6 +29,13 @@ class houghCandidates extends houghTransform{
      getIntersections(lines);
   }
   
+  public ArrayList<PVector> createLines(){
+     bestCandidates = bestCandidates();
+     fillLines();
+     return lines;
+  }
+  
+  
   public void drawEdges(){
      bestCandidates = bestCandidates();
      fillLines();
@@ -141,8 +148,8 @@ class houghCandidates extends houghTransform{
         int y = (int) ((-(line2.x)*cos(line1.y) + (line1.x)*cos(line2.y))/d);
         intersections.add(new PVector(x, y));
         // draw the intersection
-        fill(255, 128, 0);
-        ellipse(x, y, 10, 10);
+        //fill(255, 128, 0);
+        //ellipse(x, y, 10, 10);
       }
     }
     return intersections;
