@@ -62,7 +62,8 @@
      //image(result,0,0);
      //h.drawLines();
       image(result, 0, 0);
-      h3.drawEdges();
+      h3.updateAndDraw(result);
+
       
   //}
     
