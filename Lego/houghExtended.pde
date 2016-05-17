@@ -8,7 +8,8 @@ class houghCandidates extends houghTransform{
   private ArrayList<Integer> bestCandidates;
   private ArrayList<PVector> lines;
   private ArrayList<PVector> intersections;
-  private ArrayList<PVector> cartesianLines;
+  
+  private Map<PVector, PVector> cartesianToPolar;
   
   public houghCandidates(PImage edgeImg, int nbLines, int minVotes, int neighbourhoodSize){
     super(edgeImg);
@@ -18,7 +19,7 @@ class houghCandidates extends houghTransform{
     bestCandidates = new ArrayList<Integer>(nbLines);
     lines = new ArrayList<PVector>();
     intersections = new ArrayList<PVector>();
-    cartesianLines = new ArrayList<PVector> ();
+    cartesianToPolar = new HashMap();
   }
   
   public void updateAndDraw(PImage imageP){
@@ -33,8 +34,8 @@ class houghCandidates extends houghTransform{
      return lines;
   }
   
-  public ArrayList<PVector> getCartesianLines(){
-     return cartesianLines; 
+  public Set<PVector> getCartesianLines(){
+     return cartesianToPolar.keySet();
   }
   
   public void drawEdges(List<PVector> lines){
@@ -87,6 +88,7 @@ class houghCandidates extends houghTransform{
   public void drawEdges(){
      candidates();
      fillLines();
+     cartesianToPolar.clear();
      for(int a=0; (a<lines.size()&&(a<nbLines)); ++a) {
        // Pas de stress, les valeurs r et i stockées sont bel et bien des entiers, cf fillLines()
         int r = (int) lines.get(a).x;
@@ -106,36 +108,36 @@ class houghCandidates extends houghTransform{
         int y2 = (int) ((r - centerX* cosCache[i] - houghHeight)/sinCache[i] + centerY);
         int y3 = img.width;
         int x3 = (int) ((r- houghHeight - centerY*sinCache[i])/ cosCache[i] + centerX);
-        stroke(204, 102, 0);
+        //stroke(204, 102, 0);
         if (y0 > 0) {
           if (x1 > 0) {
-            addLine(x0, y0, x1, y1);
+            addLine(x0, y0, x1, y1, lines.get(a));
           } else if (y2 >0) {
-            addLine(x0, y0, x2, y2);
+            addLine(x0, y0, x2, y2, lines.get(a));
           } else {
-            addLine(x0, y0, x3, y3);
+            addLine(x0, y0, x3, y3, lines.get(a));
           }
         } else {
           if (x1>0) {
             if (y2 >0) {
-              addLine(x1, y1, x2, y2);
+              addLine(x1, y1, x2, y2, lines.get(a));
             } else {
-              addLine(x1, y1, x3, y3);
+              addLine(x1, y1, x3, y3, lines.get(a));
             }
           } else { 
-            addLine(x2, y2, x3, y3);
+            addLine(x2, y2, x3, y3, lines.get(a));
           }
         }
      }
   }
   
-  private void addLine(int x0, int y0, int x1, int y1){
-    line(x0,y0,x1,y1);
+  private void addLine(int x0, int y0, int x1, int y1, PVector polar){
+    //line(x0,y0,x1,y1);
     //println("(x0, y0, x1, y1) = " + " ("+ x0 + ", "+ y0 + ", "+ x1 + ", " + y1 + ")"); 
     float coeff = (float)(y1-y0)/(x1-x0); // y = ax + b <=> b = y - ax
     float ordinate = y0 - coeff*x0;
     //println("coeff : " + coeff + "; ordinate : " + ordinate);
-    cartesianLines.add(new PVector(coeff, ordinate));
+    cartesianToPolar.put(new PVector(coeff, ordinate), polar);
   }
   
   private void fillLines(){
@@ -185,7 +187,7 @@ class houghCandidates extends houghTransform{
        return candidates;
   }
   
-  public ArrayList<PVector> getIntersections(List<PVector> lines) {
+  public ArrayList<PVector> getIntersections(List<PVector> cartesianLines) {
     
     /// Ecraser accumulateur
     ArrayList<PVector> intersections = new ArrayList<PVector>();
@@ -199,7 +201,7 @@ class houghCandidates extends houghTransform{
         float k1 = line1.y;
         float k2 = line2.y;
         
-        if((a1-a2) != 0){
+        if(a1 != a2){
            float xC = -(k1-k2)/(a1-a2);
            //println("Intersection entre la ligne " + i + " et la ligne " + j + " donne x : " + xC);
            int x = (int) xC;

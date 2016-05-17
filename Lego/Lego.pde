@@ -35,12 +35,21 @@
    //h.fillCandidates();
    image(result, 0, 0);
    QuadGraph quadgraph = new QuadGraph();
-   List<PVector> lines = h.createLines();
-   println(lines);
-   quadgraph.build(lines,width, height);
-   println(quadgraph.findCycles());
-   List<PVector> bestOfCycles = new ArrayList(quadgraph.bestCycles(lines, quadgraph.findCycles(),0,0));
-   h.drawEdges(bestOfCycles);
+   h.drawEdges();
+   List<PVector> linesCartesian = new ArrayList(h.getCartesianLines());
+   
+   quadgraph.build(linesCartesian,width, height);
+   List<PVector[]> bestOfCyclesCartesian = new ArrayList(quadgraph.bestCycles(linesCartesian, quadgraph.findCycles(),0,0));
+   
+   List<PVector> bestLinesPolar = new ArrayList();
+   for(PVector[] cycleCartesian : bestOfCyclesCartesian) {
+       for(PVector cartesianLine : cycleCartesian) {
+          bestLinesPolar.add(h.cartesianToPolar.get(cartesianLine));
+          //println(linesCartesian.get(i));
+       }
+   }
+   //println(bestLines);
+   h.drawEdges(bestLinesPolar);
    //List<PVector> points = h.getIntersections(h.fillEdges());
    /*println(points);
       fill(255,0,0);
@@ -53,7 +62,7 @@
   
   void draw() {
    //background(0);
-     //houghCandidates h3  = new houghCandidates(result, 200, 200, 10);
+     houghCandidates h3  = new houghCandidates(result, 200, 200, 10);
 
    
    
@@ -69,8 +78,8 @@
      //PImage imgtemp = h.imageToDisplay();
      //image(result,0,0);
      //h.drawLines();
-      image(result, 0, 0);
-      h3.updateAndDraw(result);
+      //image(result, 0, 0);
+      //h3.updateAndDraw(result);
 
       
   //}
