@@ -13,7 +13,7 @@
   }
   
   void setup() {
-   img = loadImage("board1.jpg");
+   img = loadImage("board4.jpg");
    //noLoop();
    /*
    String[] cameras = Capture.list();
@@ -45,7 +45,7 @@
   
   void draw() {
    //background(0);
-     houghCandidates h3  = new houghCandidates(result, 200, 200, 10);
+     houghCandidates h3  = new houghCandidates(result, 200, 150, 10);
 
    
    
