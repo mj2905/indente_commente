@@ -61,7 +61,7 @@ class houghTransform {
      int r = 0;
       for(int i = 0; i <maxPhi; i++){
         r = (int) (((x - centerX) * cosCache[i]) + ((y-centerY) * sinCache[i]));
-        r += houghHeight;
+        r += (doubleHeight-1)/2;
         if(r < 0 || r > doubleHeight) continue;
         accEmpty = false;
         accumulator[i * doubleHeight + r] += 1;
@@ -77,7 +77,6 @@ class houghTransform {
     img.loadPixels();
     accumulator = new int[(maxPhi+2) * (doubleHeight +2 )];
     accEmpty = true;
-    int r = 0;
     for (int y = 0; y < img.height; ++y) {
       for (int x = 0; x < img.width; ++x) {
         if (brightness(img.pixels[y*img.width + x]) != 0) {
@@ -94,7 +93,7 @@ class houghTransform {
       houghImg.pixels[i] = color(min(255, accumulator[i]));
     }
 
-    houghImg.resize(800, 600);
+    //houghImg.resize(800, 600);
     houghImg.updatePixels();
     return houghImg;
   }

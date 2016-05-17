@@ -69,8 +69,9 @@
      //PImage imgtemp = h.imageToDisplay();
      //image(result,0,0);
      //h.drawLines();
-      //image(result, 0, 0);
-      //h3.drawEdges();
+      image(result, 0, 0);
+      h3.updateAndDraw(result);
+
       
   //}
     
