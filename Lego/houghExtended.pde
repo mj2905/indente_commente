@@ -1,34 +1,12 @@
 class houghCandidates extends houghTransform{
   final private int maxPhi= 180;
-
-  // L'indice de palliers de phi et l'indice de palliers de R (pour passer d'un rayon continu à un rayon discret, on va devoir tronquer nos cases)
-  final private float discretizationStepsPhi = (float)Math.PI / maxPhi; 
-
-  // Respectivement l'image où l'on applique la transformation et l'image représentant l'accumulateur
-  //private PImage img;
-  //private PImage houghImg;
-
-  // Les coordonnées du centre de l'image
-  //private float centerX, centerY;
-
-  // L'accumulateur, qui stocke une ligne (phi, r) à l'indice phi*rMax + r.
-  //private int[] accumulator;
-  
-  // La hauteur de l'accumulateur
-  //private int houghHeight;
-
-  // On double la hauteur pour prendre les valeurs négatives en plus.
-  //private int doubleHeight, width, height;
-
-  // On stocke les valeurs de phi possibles, pour gagner des perf'
-  //private double[] sinCache;
-  //private double[] cosCache;
   
   // Le nombre de lignes est stocké dans un tableau
   private int nbLines, minVotes, neighbourhoodSize;
   
   private ArrayList<Integer> bestCandidates;
   private ArrayList<PVector> lines;
+  private ArrayList<PVector> intersections;
 
   
   public houghCandidates(PImage edgeImg, int nbLines, int minVotes, int neighbourhoodSize){
@@ -38,11 +16,17 @@ class houghCandidates extends houghTransform{
     this.neighbourhoodSize = neighbourhoodSize;
     bestCandidates = new ArrayList<Integer>(nbLines);
     lines = new ArrayList<PVector>();
-    
+    intersections = new ArrayList<PVector>();
   }
   
   private ArrayList<Integer> bestCandidates(){
      return candidates();
+  }
+  
+  public void updateAndDraw(PImage imageP){
+     img = imageP;
+     drawEdges();
+     getIntersections(lines);
   }
   
   public void drawEdges(){
@@ -62,13 +46,13 @@ class houghCandidates extends houghTransform{
         // Hence:
      
         int x0 = 0;
-        int y0 = (int) ((r+ centerX* cosCache[i] - houghHeight)/sinCache[i] + centerY); //
+        int y0 = (int) ((r+ centerX* cosCache[i] - houghHeight)/sinCache[i] + centerY);
         int x1 = (int) ((r + centerY*sinCache[i] - houghHeight)/ cosCache[i] + centerX);
         int y1 = 0;
         int x2 = img.width;
-        int y2 = (int) ((r - centerX* cosCache[i] - houghHeight)/sinCache[i] + centerY);  //(-cos(phi) / sin(phi) *x2 + trueR/sin(phi));
+        int y2 = (int) ((r - centerX* cosCache[i] - houghHeight)/sinCache[i] + centerY);
         int y3 = img.width;
-        int x3 = (int) ((r- houghHeight - centerY*sinCache[i])/ cosCache[i] + centerX);//(-(y3 - trueR/sin(phi)) * (sin(phi)/cos(phi)));
+        int x3 = (int) ((r- houghHeight - centerY*sinCache[i])/ cosCache[i] + centerX);
         //println("x0 : " + x0 + ", x1:" + x1 + ", x2 : "+ x2 + ", x3 : " + x3);
         //println("y0 : " + y0 + ", y1 : " + y1 + ", y2 :" + y2 + ", y3 : "+ y3);
         stroke(204, 102, 0);
@@ -105,6 +89,13 @@ class houghCandidates extends houghTransform{
     }
   }
   
+  public ArrayList<Integer> getCandidates(){
+     return bestCandidates; 
+  }
+  
+  public ArrayList<PVector> getLines(){
+     return lines; 
+  }
   
   private ArrayList<Integer> candidates(){
     bestCandidates = new ArrayList<Integer>(nbLines);
@@ -137,6 +128,30 @@ class houghCandidates extends houghTransform{
        Collections.sort(candidates, new HoughComparator(accumulator));
        return candidates;
   }
+  
+  public ArrayList<PVector> getIntersections(List<PVector> lines) {
+    ArrayList<PVector> intersections = new ArrayList<PVector>();
+    for (int i = 0; i < lines.size() - 1; i++) {
+      PVector line1 = lines.get(i);
+      for (int j = i + 1; j < lines.size(); j++) {
+        PVector line2 = lines.get(j);
+        // compute the intersection and add it to 'intersections'
+        double d = cos(line2.y)*sin(line1.y) - cos(line1.y)*sin(line2.y);
+        int x = (int) (((line2.x)*sin(line1.y) - (line1.x)*sin(line2.y))/d);
+        int y = (int) ((-(line2.x)*cos(line1.y) + (line1.x)*cos(line2.y))/d);
+        intersections.add(new PVector(x, y));
+        // draw the intersection
+        fill(255, 128, 0);
+        ellipse(x, y, 10, 10);
+      }
+    }
+    return intersections;
+  }
+  
+  public ArrayList<PVector> getIntersections(){
+     return intersections; 
+  }
+  
   
   private boolean checkNeighbours(int value, int r, int phi, int neighbourhoodSize){
     for(int y = - neighbourhoodSize; y <= neighbourhoodSize; y++){
