@@ -80,7 +80,10 @@ class QuadGraph {
     List<int[]> cycles = findCycles();
     Set<PVector> linesFromBestCycles = new HashSet();
     
+    float biggestAreaFound = 0;
+    
     for(int i = 0; i < cycles.size(); ++i) {
+      println("cycle");
       
       PVector l0 = lines.get(cycles.get(i)[0]);
       PVector l1 = lines.get(cycles.get(i)[1]);
@@ -92,16 +95,19 @@ class QuadGraph {
       PVector i2 = intersection(l2,l3);
       PVector i3 = intersection(l3,l0);
       
-      println(i0 + " " + i1 + " " + i2 + " " + i3);
-      
-      if(isConvex(i0, i1, i2, i3)
+      float area = area(i0,i1,i2,i3);
+      if(area > biggestAreaFound) {
+        if(isConvex(i0, i1, i2, i3)
           && validArea(i0, i1, i2, i3, max_area, min_area)
           && nonFlatQuad(i0, i1, i2, i3)
           ){
-        linesFromBestCycles.add(l0);
-        linesFromBestCycles.add(l1);
-        linesFromBestCycles.add(l2);
-        linesFromBestCycles.add(l3);
+          linesFromBestCycles.clear();
+          linesFromBestCycles.add(l0);
+          linesFromBestCycles.add(l1);
+          linesFromBestCycles.add(l2);
+          linesFromBestCycles.add(l3);
+          biggestAreaFound = area; 
+        }
       }
     }
     
@@ -116,6 +122,7 @@ class QuadGraph {
         findNewCycles(new int[] {graph[i][j]});
       }
     }
+    /*
     for (int[] cy : cycles) {
       String s = "" + cy[0];
       for (int i = 1; i < cy.length; i++) {
@@ -123,6 +130,7 @@ class QuadGraph {
       }
       System.out.println(s);
     }
+    */
     return cycles;
   }
   /*
@@ -306,8 +314,6 @@ class QuadGraph {
     float i3=v43.cross(v14).z;
     float i4=v14.cross(v21).z;
 
-    println(i1 + " " + i2 + " " + i3 + " " + i4);
-
     if (   (i1>0 && i2>0 && i3>0 && i4>0) 
       || (i1<0 && i2<0 && i3<0 && i4<0))
       return true;
@@ -339,6 +345,21 @@ class QuadGraph {
     if (!valid) System.out.println("Area out of range");
 
     return valid;
+  }
+  
+  float area(PVector c1, PVector c2, PVector c3, PVector c4) {
+
+    PVector v21= PVector.sub(c1, c2);
+    PVector v32= PVector.sub(c2, c3);
+    PVector v43= PVector.sub(c3, c4);
+    PVector v14= PVector.sub(c4, c1);
+
+    float i1=v21.cross(v32).z;
+    float i2=v32.cross(v43).z;
+    float i3=v43.cross(v14).z;
+    float i4=v14.cross(v21).z;
+
+    return Math.abs(0.5f * (i1 + i2 + i3 + i4));
   }
 
   /** Compute the (cosine) of the four angles of the quad, and check they are all large enough

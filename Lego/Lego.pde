@@ -14,7 +14,7 @@
   }
   
   void setup() {
-   img = loadImage("board4.jpg");
+   img = loadImage("board3.jpg");
    //noLoop();
    /*
    String[] cameras = Capture.list();
@@ -63,13 +63,13 @@
      image(img, 0, 0);
 
      QuadGraph graph = new QuadGraph();
-     HoughCorner hough = new HoughCorner(result, 100, 4, 10);
+     HoughCorner hough = new HoughCorner(result, 200, 100, 10);
      
      List<PVector> lines = hough.getBestEdges();
      
      graph.build(lines,img.width,img.height);
      
-     List<PVector> edgesToPrint = new ArrayList(graph.bestCycles(hough, lines,Integer.MAX_VALUE, 0));
+     List<PVector> edgesToPrint = new ArrayList(graph.bestCycles(hough, lines, 900000, 100000));
      hough.drawEdges(edgesToPrint);
      hough.drawIntersections(hough.getIntersections(edgesToPrint));
   }

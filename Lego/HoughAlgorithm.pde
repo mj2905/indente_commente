@@ -1,7 +1,7 @@
 public class HoughAlgorithm {
  
   private final PImage edgeImg;
-  private final float discretizationStepsPhi = 0.06f;
+  private final float discretizationStepsPhi = 0.01f;
   private final float discretizationStepsR = 2.5f;
   
   //dimensions of the accumulator
