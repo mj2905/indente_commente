@@ -10,11 +10,11 @@
 
   
   void settings() { 
-    size(800,600);
+    size(1000,600);
   }
   
   void setup() {
-   img = loadImage("board1.jpg");
+   img = loadImage("board4.jpg");
    //noLoop();
    /*
    String[] cameras = Capture.list();
@@ -31,6 +31,7 @@
    }*/
    
    result = sobel(filterBinaryMutable(gaussianConvolute(thresholdBrightnessSaturationHue(img)), THRESHOLD));
+   /*
    houghCandidates h = new houghCandidates(result, 200, 100, 10);
    //h.fillCandidates();
    image(result, 0, 0);
@@ -48,8 +49,9 @@
           //println(linesCartesian.get(i));
        }
    }
+   */
    //println(bestLines);
-   h.drawEdges(bestLinesPolar);
+   //h.drawEdges(bestLinesPolar);
    //List<PVector> points = h.getIntersections(h.fillEdges());
    /*println(points);
       fill(255,0,0);
@@ -58,13 +60,23 @@
    }*/
    
    //houghCandidates h3  = new houghCandidates(result, 200, 4, 10);
+     image(img, 0, 0);
+
+     QuadGraph graph = new QuadGraph();
+     HoughCorner hough = new HoughCorner(result, 100, 4, 10);
+     
+     List<PVector> lines = hough.getBestEdges();
+     
+     graph.build(lines,img.width,img.height);
+     
+     List<PVector> edgesToPrint = new ArrayList(graph.bestCycles(hough, lines,Integer.MAX_VALUE, 0));
+     hough.drawEdges(edgesToPrint);
+     hough.drawIntersections(hough.getIntersections(edgesToPrint));
   }
   
   void draw() {
    //background(0);
-     houghCandidates h3  = new houghCandidates(result, 200, 200, 10);
-
-   
+     //houghCandidates h3  = new houghCandidates(result, 200, 200, 10);
    
    /*
      if(cam.available() == true){

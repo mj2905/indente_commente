@@ -1,4 +1,6 @@
-import java.util.*;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 import java.util.ArrayList;
 
 class QuadGraph {
@@ -19,11 +21,13 @@ class QuadGraph {
     for (int i = 0; i < lines.size(); i++) {
       for (int j = i + 1; j < lines.size(); j++) {
         if (intersect(lines.get(i), lines.get(j), width, height)) {
+
+          // TODO
+          // fill the graph using intersect() to check if two lines are
+          // connected in the graph.
           
           graph[idx][0] = i;
           graph[idx][1] = j;
-          
-          println(i + " --- " + j);
 
           idx++;
         }
@@ -36,27 +40,45 @@ class QuadGraph {
    */
   boolean intersect(PVector line1, PVector line2, int width, int height) {
 
-        float a1 = line1.x;
-        float a2 = line2.x;
-        float k1 = line1.y;
-        float k2 = line2.y;
-        
-        if(a1 != a2){
-           float xC = -(k1-k2)/(a1-a2);
-           //println("Intersection entre la ligne " + i + " et la ligne " + j + " donne x : " + xC);
-           int x = (int) xC;
-           float yC = a1*xC + k1;
-           int y = (int) yC;
-           
-           if (0 <= x && 0 <= y && width >= x && height >= y) return true;
-        }
-        
-        return false;
+    double sin_t1 = Math.sin(line1.y);
+    double sin_t2 = Math.sin(line2.y);
+    double cos_t1 = Math.cos(line1.y);
+    double cos_t2 = Math.cos(line2.y);
+    float r1 = line1.x;
+    float r2 = line2.x;
+
+    double denom = cos_t2 * sin_t1 - cos_t1 * sin_t2;
+
+    int x = (int) ((r2 * sin_t1 - r1 * sin_t2) / denom);
+    int y = (int) ((-r2 * cos_t1 + r1 * cos_t2) / denom);
+
+    if (0 <= x && 0 <= y && width >= x && height >= y)
+      return true;
+    else
+      return false;
   }
   
-  List<PVector[]> bestCycles(List<PVector> lines, List<int[]> cycles, float max_area, float min_area) {
+  PVector intersection(PVector line1, PVector line2) {
+
+    double sin_t1 = Math.sin(line1.y);
+    double sin_t2 = Math.sin(line2.y);
+    double cos_t1 = Math.cos(line1.y);
+    double cos_t2 = Math.cos(line2.y);
+    float r1 = line1.x;
+    float r2 = line2.x;
+
+    double denom = cos_t2 * sin_t1 - cos_t1 * sin_t2;
+
+    int x = (int) ((r2 * sin_t1 - r1 * sin_t2) / denom);
+    int y = (int) ((-r2 * cos_t1 + r1 * cos_t2) / denom);
+
+    return new PVector(x,y);
+  }
+  
+  Set<PVector> bestCycles(HoughCorner hough, List<PVector> lines, float max_area, float min_area) {
     
-    List<PVector[]> bestCycles = new ArrayList();
+    List<int[]> cycles = findCycles();
+    Set<PVector> linesFromBestCycles = new HashSet();
     
     for(int i = 0; i < cycles.size(); ++i) {
       
@@ -65,18 +87,25 @@ class QuadGraph {
       PVector l2 = lines.get(cycles.get(i)[2]);
       PVector l3 = lines.get(cycles.get(i)[3]);
       
-      if(isConvex(l0, l1, l2, l3)
-          //&& validArea(l0, l1, l2, l3, max_area, min_area)
-          //&& !nonFlatQuad(l0, l1, l2, l3)
+      PVector i0 = intersection(l0, l1);
+      PVector i1 = intersection(l1,l2);
+      PVector i2 = intersection(l2,l3);
+      PVector i3 = intersection(l3,l0);
+      
+      println(i0 + " " + i1 + " " + i2 + " " + i3);
+      
+      if(isConvex(i0, i1, i2, i3)
+          && validArea(i0, i1, i2, i3, max_area, min_area)
+          && nonFlatQuad(i0, i1, i2, i3)
           ){
-            
-            PVector[] cycle = new PVector[] {l0,l1,l2,l3};
-            
-            bestCycles.add(cycle);
+        linesFromBestCycles.add(l0);
+        linesFromBestCycles.add(l1);
+        linesFromBestCycles.add(l2);
+        linesFromBestCycles.add(l3);
       }
     }
     
-    return bestCycles;
+    return linesFromBestCycles;
   }
 
   List<int[]> findCycles() {
@@ -267,8 +296,6 @@ class QuadGraph {
    */
   boolean isConvex(PVector c1, PVector c2, PVector c3, PVector c4) {
 
-    println(c1 + " " + c2 + " " + c3 + " " + c4);
-    
     PVector v21= PVector.sub(c1, c2);
     PVector v32= PVector.sub(c2, c3);
     PVector v43= PVector.sub(c3, c4);
@@ -278,6 +305,8 @@ class QuadGraph {
     float i2=v32.cross(v43).z;
     float i3=v43.cross(v14).z;
     float i4=v14.cross(v21).z;
+
+    println(i1 + " " + i2 + " " + i3 + " " + i4);
 
     if (   (i1>0 && i2>0 && i3>0 && i4>0) 
       || (i1<0 && i2<0 && i3<0 && i4<0))
@@ -290,7 +319,7 @@ class QuadGraph {
   /** Compute the area of a quad, and check it lays within a specific range
    */
   boolean validArea(PVector c1, PVector c2, PVector c3, PVector c4, float max_area, float min_area) {
-    
+
     PVector v21= PVector.sub(c1, c2);
     PVector v32= PVector.sub(c2, c3);
     PVector v43= PVector.sub(c3, c4);
