@@ -84,7 +84,7 @@ int neighbourhood;
     return edges;
   }
   
-  private void drawEdges(List<PVector> edges) {
+  private void drawEdges(PGraphics image, List<PVector> edges) {
     for(int i=0; (i<edges.size()&&(i<nLines)); ++i) {
       float r = edges.get(i).x;
       float phi = edges.get(i).y;
@@ -103,24 +103,24 @@ int neighbourhood;
       int y3 = img.width;
       int x3 = (int) (-(y3 - r / sin(phi)) * (sin(phi) / cos(phi)));
       // Finally, plot the lines
-      stroke(204,102,0);
+      image.stroke(204,102,0);
       if (y0 > 0) {
           if (x1 > 0)
-            line(x0, y0, x1, y1);
+            image.line(x0, y0, x1, y1);
           else if (y2 > 0)
-            line(x0, y0, x2, y2);
+            image.line(x0, y0, x2, y2);
           else
-            line(x0, y0, x3, y3);
+            image.line(x0, y0, x3, y3);
         }
       else {
         if (x1 > 0) {
           if (y2 > 0)
-            line(x1, y1, x2, y2);
+            image.line(x1, y1, x2, y2);
           else
-            line(x1, y1, x3, y3);
+            image.line(x1, y1, x3, y3);
           }
         else
-          line(x2, y2, x3, y3);
+          image.line(x2, y2, x3, y3);
         }
       }
   }
@@ -141,12 +141,12 @@ int neighbourhood;
     return intersections;
   }
   
-  private void drawIntersections(List<PVector> intersections) {
-    fill(255, 128, 0); 
+  private void drawIntersections(PGraphics image, List<PVector> intersections) {
+    image.fill(255, 128, 0); 
     for (int i = 0; i < intersections.size(); i++) {
         PVector point = intersections.get(i);
         // draw the intersection
-        ellipse(point.x, point.y, 10, 10);
+        image.ellipse(point.x, point.y, 10, 10);
     }
   }
   
@@ -156,12 +156,6 @@ int neighbourhood;
   
   public List<PVector> getBestEdges() {return getEdges(bestCandidates());}
   public List<PVector> getBestIntersections() {return getIntersections(getBestEdges());}
-  
-  public void updateAndDraw() {
-    List<PVector> edges = getBestEdges();
-    drawEdges(edges);
-    drawIntersections(getIntersections(edges));
-  }
 }
       
       

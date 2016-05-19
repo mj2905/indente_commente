@@ -4,23 +4,23 @@
   private PImage img;
   private PImage result;
   private int THRESHOLD = 185; //165
+  
+  PGraphics imgEdgeDetector;
 
   
   void settings() { 
-    size(2000,600);
+    size(1200,300);
   }
   
   void setup() {
    img = loadImage("board2.jpg");
-   img.resize(800,600);
+   imgEdgeDetector = createGraphics(800,600);
    noLoop();
 
   }
   
   void draw() {
          result = sobel(filterBinaryMutable(gaussianConvolute(thresholdBrightnessSaturationHue(img)), THRESHOLD));
-         
-         image(img, 0, 0, 800, 600);
 
          QuadGraph graph = new QuadGraph();
          HoughCorner hough = new HoughCorner(result, 200, 50, 10);
@@ -30,11 +30,16 @@
          graph.build(lines,img.width,img.height);
          
          List<PVector> edgesToPrint = new ArrayList(graph.bestCycles(hough, lines, 900000, 100000));
-         hough.drawEdges(edgesToPrint);
-         hough.drawIntersections(hough.getIntersections(edgesToPrint));
          
-         image(result, 1200, 0, 800, 600);
-         image(hough.getHough(), 800, 0, 400, 600);
+         imgEdgeDetector.beginDraw();
+           imgEdgeDetector.image(img, 0, 0);
+           hough.drawEdges(imgEdgeDetector, edgesToPrint);
+           hough.drawIntersections(imgEdgeDetector, hough.getIntersections(edgesToPrint));
+         imgEdgeDetector.endDraw();
+         
+         image(imgEdgeDetector, 0, 0, 400, 300);
+         image(hough.getHough(), 400, 0, 400, 300);
+         image(result, 800, 0, 400, 300);
   }
   
   PImage thresholdBrightnessSaturationHue(PImage image) {
