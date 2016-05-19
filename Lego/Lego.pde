@@ -13,7 +13,7 @@
   }
   
   void setup() {
-   img = loadImage("board2.jpg");
+   img = loadImage("board4.jpg");
    imgEdgeDetector = createGraphics(800,600);
    noLoop();
 
