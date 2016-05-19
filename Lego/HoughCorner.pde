@@ -30,7 +30,7 @@ int neighbourhood;
   
   private List<Integer> bestCandidates() {
     if(!candidatesBufferCreates) {
-       candidatesBuffer = fillCandidates(hough.fillAccumulator());
+       candidatesBuffer = fillCandidates(hough.getAccumulator());
     }
     candidatesBufferCreates = true;
     return candidatesBuffer;
@@ -148,6 +148,10 @@ int neighbourhood;
         // draw the intersection
         ellipse(point.x, point.y, 10, 10);
     }
+  }
+  
+  public PImage getHough() {
+   return hough.getHough(hough.getAccumulator());
   }
   
   public List<PVector> getBestEdges() {return getEdges(bestCandidates());}

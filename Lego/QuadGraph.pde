@@ -83,7 +83,7 @@ class QuadGraph {
     float biggestAreaFound = 0;
     
     for(int i = 0; i < cycles.size(); ++i) {
-      println("cycle");
+      //println("cycle");
       
       PVector l0 = lines.get(cycles.get(i)[0]);
       PVector l1 = lines.get(cycles.get(i)[1]);
@@ -318,7 +318,7 @@ class QuadGraph {
       || (i1<0 && i2<0 && i3<0 && i4<0))
       return true;
     else 
-    System.out.println("Eliminating non-convex quad");
+    //System.out.println("Eliminating non-convex quad");
     return false;
   }
 
@@ -338,11 +338,11 @@ class QuadGraph {
 
     float area = Math.abs(0.5f * (i1 + i2 + i3 + i4));
 
-    System.out.println(area);
+    //System.out.println(area);
 
     boolean valid = (area < max_area && area > min_area);
 
-    if (!valid) System.out.println("Area out of range");
+    //if (!valid) System.out.println("Area out of range");
 
     return valid;
   }
@@ -383,7 +383,7 @@ class QuadGraph {
     if (cos1 < min_cos && cos2 < min_cos && cos3 < min_cos && cos4 < min_cos)
       return true;
     else {
-      System.out.println("Flat quad");
+      //System.out.println("Flat quad");
       return false;
     }
   }

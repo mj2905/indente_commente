@@ -4,98 +4,37 @@
   private PImage img;
   private PImage result;
   private int THRESHOLD = 185; //165
-  
-  private Capture cam;
-  private PImage cameraImg;
 
   
   void settings() { 
-    size(1000,600);
+    size(2000,600);
   }
   
   void setup() {
-   img = loadImage("board3.jpg");
-   //noLoop();
-   /*
-   String[] cameras = Capture.list();
-   if(cameras.length == 0){
-    println("No camera available");
-    exit();
-   }else{
-      println("Available cameras:");
-     for(int i = 0; i <cameras.length; i++){
-        println(cameras[i]); 
-     } 
-     cam = new Capture(this, cameras[0]);
-     cam.start();
-   }*/
-   
-   result = sobel(filterBinaryMutable(gaussianConvolute(thresholdBrightnessSaturationHue(img)), THRESHOLD));
-   /*
-   houghCandidates h = new houghCandidates(result, 200, 100, 10);
-   //h.fillCandidates();
-   image(result, 0, 0);
-   QuadGraph quadgraph = new QuadGraph();
-   h.drawEdges();
-   List<PVector> linesCartesian = new ArrayList(h.getCartesianLines());
-   
-   quadgraph.build(linesCartesian,width, height);
-   List<PVector[]> bestOfCyclesCartesian = new ArrayList(quadgraph.bestCycles(linesCartesian, quadgraph.findCycles(),0,0));
-   
-   List<PVector> bestLinesPolar = new ArrayList();
-   for(PVector[] cycleCartesian : bestOfCyclesCartesian) {
-       for(PVector cartesianLine : cycleCartesian) {
-          bestLinesPolar.add(h.cartesianToPolar.get(cartesianLine));
-          //println(linesCartesian.get(i));
-       }
-   }
-   */
-   //println(bestLines);
-   //h.drawEdges(bestLinesPolar);
-   //List<PVector> points = h.getIntersections(h.fillEdges());
-   /*println(points);
-      fill(255,0,0);
-   for(PVector point : points) {
-     ellipse(point.x, point.y, 100, 100);
-   }*/
-   
-   //houghCandidates h3  = new houghCandidates(result, 200, 4, 10);
-     image(img, 0, 0);
+   img = loadImage("board2.jpg");
+   img.resize(800,600);
+   noLoop();
 
-     QuadGraph graph = new QuadGraph();
-     HoughCorner hough = new HoughCorner(result, 200, 100, 10);
-     
-     List<PVector> lines = hough.getBestEdges();
-     
-     graph.build(lines,img.width,img.height);
-     
-     List<PVector> edgesToPrint = new ArrayList(graph.bestCycles(hough, lines, 900000, 100000));
-     hough.drawEdges(edgesToPrint);
-     hough.drawIntersections(hough.getIntersections(edgesToPrint));
   }
   
   void draw() {
-   //background(0);
-     //houghCandidates h3  = new houghCandidates(result, 200, 200, 10);
-   
-   /*
-     if(cam.available() == true){
-         cam.read(); 
-         cameraImg = cam.get();
-         image(sobel(thresholdLowValues(cameraImg)),0,0);
-     }*/
-     //HoughCorner h = new HoughCorner(result, 3, 6, 4);
-     //houghTransform h = new houghTransform(result);
-     //h.fillAccumulator();
-     //PImage imgtemp = h.imageToDisplay();
-     //image(result,0,0);
-     //h.drawLines();
-      //image(result, 0, 0);
-      //h3.updateAndDraw(result);
+         result = sobel(filterBinaryMutable(gaussianConvolute(thresholdBrightnessSaturationHue(img)), THRESHOLD));
+         
+         image(img, 0, 0, 800, 600);
 
-      
-  //}
-    
+         QuadGraph graph = new QuadGraph();
+         HoughCorner hough = new HoughCorner(result, 200, 50, 10);
+         
+         List<PVector> lines = hough.getBestEdges();
+         
+         graph.build(lines,img.width,img.height);
+         
+         List<PVector> edgesToPrint = new ArrayList(graph.bestCycles(hough, lines, 900000, 100000));
+         hough.drawEdges(edgesToPrint);
+         hough.drawIntersections(hough.getIntersections(edgesToPrint));
+         
+         image(result, 1200, 0, 800, 600);
+         image(hough.getHough(), 800, 0, 400, 600);
   }
   
   PImage thresholdBrightnessSaturationHue(PImage image) {
@@ -246,6 +185,13 @@
     return convolution(image, kernel, 99);
   }
   
+  int maskValueSumH(int i, int j, float weight, PImage image) {
+          return color((int)(brightness(image.pixels[i + (j-1) * image.width]) - brightness(image.pixels[i + (j+1) * image.width]))/weight);
+  }
+  
+  int maskValueSumV(int i, int j, float weight, PImage image) {
+          return color((int)(brightness(image.pixels[i-1 + j * image.width]) - brightness(image.pixels[i+1 + j * image.width]))/weight);
+  }
   
   int maskValue(int i, int j, float[][] mask, float weight, PImage image) {
 
@@ -257,6 +203,7 @@
           }
         return color((int)(bright/weight));
   }
+  
   
   
   /*********************
@@ -287,8 +234,8 @@
       for (int x = 2; x < image.width - 2; x++) {
         // Skip left and right
         
-        sumh = maskValue(x,y,hKernel,1, image);
-        sumv = maskValue(x,y,vKernel,1, image);
+        sumh = maskValue(x,y, hKernel,1, image);
+        sumv = maskValue(x,y, vKernel, 1, image);
         
         sum = (int)(sqrt(pow(brightness(sumh),2) + pow(brightness(sumv),2)));
         //sum = (int)(sqrt(pow(sumh,2) + pow(sumv ,2)));

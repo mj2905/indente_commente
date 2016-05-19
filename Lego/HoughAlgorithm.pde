@@ -8,11 +8,24 @@ public class HoughAlgorithm {
   private final int phiDim;
   private final int rDim;
   
+  // On stocke les valeurs de phi possibles, pour gagner des perf'
+   public double[] sinCache;
+   public double[] cosCache;
+  
   public HoughAlgorithm(PImage edgeImg) {
     this.edgeImg = edgeImg;
     
     phiDim = (int) (Math.PI / discretizationStepsPhi);
     rDim = (int) (((edgeImg.width + edgeImg.height) * 2 + 1) / discretizationStepsR);
+    
+     cosCache = new double[phiDim];
+     sinCache = new double[phiDim];
+     
+     for (int i = 0; i < phiDim; i++) {
+        double phi = i * discretizationStepsPhi;
+        sinCache[i] = Math.sin(phi);
+        cosCache[i] = Math.cos(phi);
+     }
   }
   
   PImage getHough(int[] accumulator) {
@@ -25,7 +38,18 @@ public class HoughAlgorithm {
     return houghImg;
   }
   
-  int[] fillAccumulator() {
+  private int[] accumulatorBuffer;
+  private boolean accumulatorComputed = false;
+  
+  public int[] getAccumulator() {
+     if(!accumulatorComputed) {
+        accumulatorBuffer = fillAccumulator();
+        accumulatorComputed = true;
+     }
+     return accumulatorBuffer;
+  }
+  
+  private int[] fillAccumulator() {
     int[] accumulator = new int[(phiDim + 2) * (rDim + 2)];
     //Fill the accumulator: on edge points (ie, white pixels of the edge image),
     //store all possible (r, phi) pairs describing lines going through the point.
@@ -34,8 +58,7 @@ public class HoughAlgorithm {
       //Are we on an edge?
       if(brightness(edgeImg.pixels[y * edgeImg.width + x]) != 0) {
         for(int i = 0; i < phiDim; ++i) {
-          float phi = i*discretizationStepsPhi;
-          int r = (int)((x * cos(phi) + y * sin(phi)) / discretizationStepsR);
+          int r = (int)((x * cosCache[i] + y * sinCache[i]) / discretizationStepsR);
           r+= (rDim-1)/2;
           ++accumulator[(i+1) * (rDim + 2) + r + 2];
         }
