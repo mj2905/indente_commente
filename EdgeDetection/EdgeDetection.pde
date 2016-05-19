@@ -250,17 +250,21 @@
       }
     }
     
-    for (int y = 2; y < image.height - 2; y++) {
+    for (int y = 0; y < image.height; y++) {
     // Skip top and bottom edges
-      for (int x = 2; x < image.width - 2; x++) {
+      for (int x = 0; x < image.width; x++) {
         // Skip left and right
-        
-        if (buffer[x + y * image.width] > (int)(max * 0.3f)) {
-          // 30% of the max
-          resultImage.pixels[x + y * image.width] =  color(255);
-          } 
+        if(y <= 2 || y >= image.height - 2 || x <= 2 || x >= image.width -2) {
+            resultImage.pixels[x + y * image.width] = color(0);
+        }
         else {
-          resultImage.pixels[x + y * image.width] = color(0);
+          if (buffer[x + y * image.width] > (int)(max * 0.3f)) {
+            // 30% of the max
+            resultImage.pixels[x + y * image.width] =  color(255);
+            } 
+          else {
+            resultImage.pixels[x + y * image.width] = color(0);
+          }
         }
       }
     }
