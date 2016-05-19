@@ -13,7 +13,7 @@
   }
   
   void setup() {
-   img = loadImage("board4.jpg");
+   img = loadImage("board1.jpg");
    imgEdgeDetector = createGraphics(800,600);
    noLoop();
 
@@ -29,7 +29,7 @@
          
          graph.build(lines,img.width,img.height);
          
-         List<PVector> edgesToPrint = new ArrayList(graph.bestCycles(hough, lines, 900000, 100000));
+         List<PVector> edgesToPrint = new ArrayList(graph.bestCycles(hough, lines, 900000, 50000));
          
          imgEdgeDetector.beginDraw();
            imgEdgeDetector.image(img, 0, 0);
