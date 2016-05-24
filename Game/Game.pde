@@ -38,11 +38,10 @@ private final int scoresThreshold =  256;
 private HScrollbar scrollBar;
 private final int size_slider = 20;
 
-
+private ImageProcessing imgproc;
 
 void settings() {
- fullScreen(P3D);
- //size(800,600,P3D);
+ size(800,600,P3D);
 }
 
 
@@ -59,6 +58,7 @@ void GUIandGameGraphics(){
 }
 
 void setup(){
+  
   //frameRate(100);
   guiHeight = height/4;
   
@@ -74,6 +74,14 @@ void setup(){
   ScoreBarChartAndThumbDraw(barWidth);
   plateAndScrollBarCreator(SIZE_X_Z,  barWidth);
   
+  
+  imgproc = new ImageProcessing();
+  String []args = {"Image processing window"};
+  PApplet.runSketch(args, imgproc);
+  //...
+  
+  // where getRotation could be a getter
+  //for the rotation angles you computed previously
 }
 
 
@@ -122,6 +130,8 @@ void gameRender() {
         }
         else {
       // changes to the camera in order to see better what we are doing when angleX>0 
+        PVector rot = imgproc.getRotation();
+        plate.setRot(rot);
         plate.normalMode(gameGraphics);
         }
        

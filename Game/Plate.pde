@@ -52,6 +52,12 @@ public class Plate {
    sphere = new Sphere(this, SPHERE_RADIUS);
   }
   
+  public void setRot(PVector angles) {
+    setRotX(angles.x);
+    //setRotY(angles.y);
+    setRotZ(angles.z);
+  }
+  
   public void setRotX(float rotX) {
       if(rotX > MAX_ANGLE) {
         rotationX = radians(MAX_ANGLE);
