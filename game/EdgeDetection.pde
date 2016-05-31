@@ -22,40 +22,46 @@
   }
   
     void setup() {
-   img = loadImage("C:\\Users\\Thomas\\workspace\\InfoVisu\\indente_commente\\Game\\board3.jpg");
+   //img= createGraphics(800,600);
+   //img = loadImage("C:\\Users\\Thomas\\workspace\\InfoVisu\\indente_commente\\Game\\board3.jpg");
    imgEdgeDetector = createGraphics(800,600);
    //noLoop();
-   d2d3 = new TwoDThreeD(img.width, img.height);
+   d2d3 = new TwoDThreeD(800, 600);
    String[] cameras = Capture.list();
    cam = new Capture(this, cameras[0]);
    cam.start();
   }
   
   void draw() {
-         img=cam;
-         result = sobel(filterBinaryMutable(gaussianConvolute(thresholdBrightnessSaturationHue(img)), THRESHOLD));
-         
-         QuadGraph graph = new QuadGraph();
-         HoughCorner hough = new HoughCorner(result, 200, 50, 10);
-         
-         List<PVector> lines = hough.getBestEdges();
-         
-         graph.build(lines,img.width,img.height);
-         
-         List<PVector> edgesToPrint = new ArrayList(graph.bestCycles(hough, lines, 900000, 50000));
-         
-         imgEdgeDetector.beginDraw();
-           imgEdgeDetector.image(img, 0, 0);
-           hough.drawEdges(imgEdgeDetector, edgesToPrint);
-           hough.drawIntersections(imgEdgeDetector,  hough.getIntersections(edgesToPrint));
-           if (!hough.getIntersections(edgesToPrint).isEmpty()) {
-             rotations = d2d3.get3DRotations(hough.getIntersections(edgesToPrint));
-           }
-         imgEdgeDetector.endDraw();
-         
-         image(imgEdgeDetector, 0, 0, 400, 300);
-         image(hough.getHough(), 400, 0, 400, 300);
-         image(result, 800, 0, 400, 300);
+      if (cam.available()) {
+        img= createGraphics(800,600);
+         cam.read();
+         img=cam.get();
+      
+     result = sobel(filterBinaryMutable(gaussianConvolute(thresholdBrightnessSaturationHue(img)), THRESHOLD));
+     
+     QuadGraph graph = new QuadGraph();
+     HoughCorner hough = new HoughCorner(result, 200, 50, 10);
+     
+     List<PVector> lines = hough.getBestEdges();
+     
+     graph.build(lines,img.width,img.height);
+     
+     List<PVector> edgesToPrint = new ArrayList(graph.bestCycles(hough, lines, 900000, 50000));
+     
+     imgEdgeDetector.beginDraw();
+       imgEdgeDetector.image(img, 0, 0);
+       hough.drawEdges(imgEdgeDetector, edgesToPrint);
+       hough.drawIntersections(imgEdgeDetector,  hough.getIntersections(edgesToPrint));
+       if (!hough.getIntersections(edgesToPrint).isEmpty()) {
+         rotations = d2d3.get3DRotations(hough.getIntersections(edgesToPrint));
+       }
+     imgEdgeDetector.endDraw();
+      
+     image(imgEdgeDetector, 0, 0, 400, 300);
+     image(hough.getHough(), 400, 0, 400, 300);
+     image(result, 800, 0, 400, 300);
+      }
   }
   //...
 }
