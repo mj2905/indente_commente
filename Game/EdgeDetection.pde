@@ -68,7 +68,7 @@ class ImageProcessing extends PApplet {
            movieCam.read();
          }
          img=movieCam;
-         //img = loadImage("C:/Users/Marc/Documents/VisualProgramming/indente_commente/Game/board1.jpg"); 
+         //img = loadImage("C:/Users/Marc/Documents/VisualProgramming/indente_commente/Game/board4.jpg"); 
           
          imgEdgeDetector = createGraphics(800,600); 
           
@@ -87,7 +87,7 @@ class ImageProcessing extends PApplet {
            imgEdgeDetector.image(img, 0, 0);
            hough.drawEdges(imgEdgeDetector, edgesToPrint);
            
-           List<PVector> intersections = graph.bestCyclesNodes(lines,maxArea,minArea);//hough.getIntersections(edgesToPrint);
+           List<PVector> intersections = new ArrayList(graph.bestCyclesNodes(lines,maxArea,minArea));//hough.getIntersections(edgesToPrint);
            
            hough.drawIntersections(imgEdgeDetector, intersections);
            if (intersections.size()>= 4) {
