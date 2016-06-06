@@ -135,7 +135,7 @@ int neighbourhood;
         double d = cos(line2.y)*sin(line1.y) - cos(line1.y)*sin(line2.y);
         int x = (int) (((line2.x)*sin(line1.y) - (line1.x)*sin(line2.y))/d);
         int y = (int) ((-(line2.x)*cos(line1.y) + (line1.x)*cos(line2.y))/d);
-        intersections.add(new PVector(x, y));
+        intersections.add(new PVector(x, y, 1));
       }
     }
     return intersections;

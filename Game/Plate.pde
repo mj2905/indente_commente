@@ -53,9 +53,9 @@ public class Plate {
   }
   
   public void setRot(PVector angles) {
-    setRotX(angles.x);
+    setRotX(degrees(angles.x));
     //setRotY(angles.y);
-    setRotZ(angles.z);
+    setRotZ(degrees(angles.z));
   }
   
   public void setRotX(float rotX) {
