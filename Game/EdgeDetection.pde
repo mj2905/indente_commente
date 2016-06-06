@@ -67,7 +67,8 @@ class ImageProcessing extends PApplet {
          if(playing) {
            movieCam.read();
          }
-         img=movieCam;
+         //img=movieCam;
+         img = loadImage("C:/Users/Marc/Documents/VisualProgramming/indente_commente/Game/board1.jpg"); 
           
          imgEdgeDetector = createGraphics(800,600); 
           
