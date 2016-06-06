@@ -127,7 +127,7 @@ int neighbourhood;
   
   public List<PVector> getIntersections(List<PVector> lines) {
     List<PVector> intersections = new ArrayList<PVector>();
-    for (int i = 0; i < lines.size() - 1; i++) {
+    for (int i = 0; i < lines.size(); i++) {
       PVector line1 = lines.get(i);
       for (int j = i + 1; j < lines.size(); j++) {
         PVector line2 = lines.get(j);

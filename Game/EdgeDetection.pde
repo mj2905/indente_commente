@@ -81,16 +81,16 @@ class ImageProcessing extends PApplet {
          
          graph.build(lines,img.width,img.height);
          
-         List<PVector> edgesToPrint = new ArrayList(graph.bestCycles(hough, lines, maxArea, minArea));
+         List<PVector> edgesToPrint = new ArrayList(graph.bestCycles(lines, maxArea, minArea));
          
          imgEdgeDetector.beginDraw();
            imgEdgeDetector.image(img, 0, 0);
            hough.drawEdges(imgEdgeDetector, edgesToPrint);
            
-           List<PVector> intersections = hough.getIntersections(edgesToPrint);
+           List<PVector> intersections = graph.bestCyclesNodes(lines,maxArea,minArea);//hough.getIntersections(edgesToPrint);
            
            hough.drawIntersections(imgEdgeDetector, intersections);
-           if (!intersections.isEmpty()) {
+           if (intersections.size()>= 4) {
              rotations = d2d3.get3DRotations(intersections);
              println("rx : " + degrees(rotations.x) + " ry : " + degrees(rotations.y) + " rz : " + degrees(rotations.z));
            }
@@ -100,8 +100,7 @@ class ImageProcessing extends PApplet {
          image(hough.getHough(), 400, 0, 400, 300);
          image(result, 800, 0, 400, 300);
       }
-  }
-  //...
+    }
 
   
   
@@ -344,5 +343,5 @@ class ImageProcessing extends PApplet {
       }
     }
   return resultImage;
-}
+  }
 }

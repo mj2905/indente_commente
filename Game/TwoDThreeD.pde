@@ -91,7 +91,7 @@ class TwoDThreeD {
         // store in projectedCorners the result of (K^(-1) · p), for each 
         // corner p found in the webcam image.
         // You can use Mat.multiply to multiply a matrix with a vector.
-        float[] corner = {points2D.get(i).x, points2D.get(i).y, points2D.get(i).z};
+        float[] corner = {points2D.get(i).x , points2D.get(i).y, points2D.get(i).z};
         projectedCorners[i]=Mat.multiply(invK, corner);
     }
     

@@ -72,10 +72,50 @@ class QuadGraph {
     int x = (int) ((r2 * sin_t1 - r1 * sin_t2) / denom);
     int y = (int) ((-r2 * cos_t1 + r1 * cos_t2) / denom);
 
-    return new PVector(x,y);
+    return new PVector(x,y,1);
   }
   
-  Set<PVector> bestCycles(HoughCorner hough, List<PVector> lines, float max_area, float min_area) {
+  Set<PVector> bestCyclesNodes(List<PVector> lines, float max_area, float min_area) {
+    
+    List<int[]> cycles = findCycles();
+    Set<PVector> nodesFromBestCycles = new HashSet();
+    
+    float biggestAreaFound = 0;
+    
+    for(int i = 0; i < cycles.size(); ++i) {
+      //println("cycle");
+      
+      PVector l0 = lines.get(cycles.get(i)[0]);
+      PVector l1 = lines.get(cycles.get(i)[1]);
+      PVector l2 = lines.get(cycles.get(i)[2]);
+      PVector l3 = lines.get(cycles.get(i)[3]);
+      
+      PVector i0 = intersection(l0, l1);
+      PVector i1 = intersection(l1,l2);
+      PVector i2 = intersection(l2,l3);
+      PVector i3 = intersection(l3,l0);
+
+      float area = area(i0,i1,i2,i3);
+      if(area > biggestAreaFound) {
+        if(isConvex(i0, i1, i2, i3)
+          && validArea(i0, i1, i2, i3, max_area, min_area)
+          //&& nonFlatQuad(i0, i1, i2, i3)
+          ){
+          nodesFromBestCycles.clear();
+          nodesFromBestCycles.add(i0);
+          nodesFromBestCycles.add(i1);
+          nodesFromBestCycles.add(i2);
+          nodesFromBestCycles.add(i3);
+          biggestAreaFound = area; 
+        }
+      }
+      
+    }
+    
+    return nodesFromBestCycles;
+  }
+  
+  Set<PVector> bestCycles(List<PVector> lines, float max_area, float min_area) {
     
     List<int[]> cycles = findCycles();
     Set<PVector> linesFromBestCycles = new HashSet();
@@ -94,7 +134,7 @@ class QuadGraph {
       PVector i1 = intersection(l1,l2);
       PVector i2 = intersection(l2,l3);
       PVector i3 = intersection(l3,l0);
-      
+
       float area = area(i0,i1,i2,i3);
       if(area > biggestAreaFound) {
         if(isConvex(i0, i1, i2, i3)

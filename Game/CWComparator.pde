@@ -25,6 +25,7 @@ public List<PVector> sortCorners(List<PVector> quad){
   // You can use Collections.rotate to shift the corners inside the quad.
   float mindist=(quad.get(0).dist(origin));
   int index=0;
+  
   for(int i=1; i<quad.size(); ++i) {
     float dist = (quad.get(i).dist(origin));
     if (dist<mindist) {
