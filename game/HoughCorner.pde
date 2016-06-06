@@ -98,9 +98,9 @@ int neighbourhood;
       int y0 = (int) (r / sin(phi));
       int x1 = (int) (r / cos(phi));
       int y1 = 0;
-      int x2 = img.width;
+      int x2 = image.width;
       int y2 = (int) (-cos(phi) / sin(phi) * x2 + r / sin(phi));
-      int y3 = img.width;
+      int y3 = image.width;
       int x3 = (int) (-(y3 - r / sin(phi)) * (sin(phi) / cos(phi)));
       // Finally, plot the lines
       image.stroke(204,102,0);

@@ -1,17 +1,24 @@
   import processing.video.*;
   import java.util.*;
+
+class ImageProcessing extends PApplet {
+  Capture cam;
+
+  TwoDThreeD d2d3;
+  PVector rotations= new PVector(0,0,0);
   
   private PImage img;
   private PImage result;
   private int THRESHOLD = 185; //165
   
   PGraphics imgEdgeDetector;
-
-  class ImageProcessing extends PApplet {
-  Capture cam;
-  //...
-  TwoDThreeD d2d3;
-  PVector rotations= new PVector(0,0,0);
+  
+  private int brightnessThreshold = 20;
+  private int saturationThreshold = 100;
+  private int hueMin = 75;
+  private int hueMax = 140;
+  private int minArea = 0;
+  private int maxArea = 10000000;
   
   PVector getRotation() {
     return rotations;
@@ -28,43 +35,48 @@
    //noLoop();
    d2d3 = new TwoDThreeD(800, 600);
    String[] cameras = Capture.list();
-   cam = new Capture(this, cameras[0]);
+   cam = new Capture(this, cameras[1]);
    cam.start();
   }
   
   void draw() {
       if (cam.available()) {
-        img= createGraphics(800,600);
+         background(0);
          cam.read();
          img=cam.get();
-      
-     result = sobel(filterBinaryMutable(gaussianConvolute(thresholdBrightnessSaturationHue(img)), THRESHOLD));
-     
-     QuadGraph graph = new QuadGraph();
-     HoughCorner hough = new HoughCorner(result, 200, 50, 10);
-     
-     List<PVector> lines = hough.getBestEdges();
-     
-     graph.build(lines,img.width,img.height);
-     
-     List<PVector> edgesToPrint = new ArrayList(graph.bestCycles(hough, lines, 900000, 50000));
-     
-     imgEdgeDetector.beginDraw();
-       imgEdgeDetector.image(img, 0, 0);
-       hough.drawEdges(imgEdgeDetector, edgesToPrint);
-       hough.drawIntersections(imgEdgeDetector,  hough.getIntersections(edgesToPrint));
-       if (!hough.getIntersections(edgesToPrint).isEmpty()) {
-         rotations = d2d3.get3DRotations(hough.getIntersections(edgesToPrint));
-       }
-     imgEdgeDetector.endDraw();
-      
-     image(imgEdgeDetector, 0, 0, 400, 300);
-     image(hough.getHough(), 400, 0, 400, 300);
-     image(result, 800, 0, 400, 300);
+          
+         imgEdgeDetector = createGraphics(800,600); 
+          
+         result = sobel(filterBinaryMutable(gaussianConvolute(thresholdBrightnessSaturationHue(img)), THRESHOLD));
+         
+         QuadGraph graph = new QuadGraph();
+         HoughCorner hough = new HoughCorner(result, 200, 4, 10);
+         
+         List<PVector> lines = hough.getBestEdges();
+         
+         graph.build(lines,img.width,img.height);
+         
+         List<PVector> edgesToPrint = new ArrayList(graph.bestCycles(hough, lines, maxArea, minArea));
+         
+         imgEdgeDetector.beginDraw();
+           imgEdgeDetector.image(img, 0, 0);
+           hough.drawEdges(imgEdgeDetector, edgesToPrint);
+           
+           List<PVector> intersections = hough.getIntersections(edgesToPrint);
+           
+           hough.drawIntersections(imgEdgeDetector, intersections);
+           if (!intersections.isEmpty()) {
+             rotations = d2d3.get3DRotations(intersections);
+           }
+         imgEdgeDetector.endDraw();
+          
+         image(imgEdgeDetector, 0, 0, 400, 300);
+         image(hough.getHough(), 400, 0, 400, 300);
+         image(result, 800, 0, 400, 300);
       }
   }
   //...
-}
+
   
   
   
@@ -77,12 +89,16 @@
    
    for(int i=0; i < resultImage.width; ++i) {
       for(int j=0; j < resultImage.height; ++j) {
-          if(brightness(image.pixels[i + j*resultImage.width]) < 25 || saturation(image.pixels[i + j*resultImage.width]) < 80) {
+        //25 80
+          color c = image.pixels[i + j*resultImage.width];
+        
+          if(brightness(c) < brightnessThreshold || saturation(c) < saturationThreshold) {
              resultImage.pixels[i + j * resultImage.width] =  color(0);
           }
           else {
-             float hue = hue(image.pixels[i + j*resultImage.width]);
-              resultImage.pixels[i + j * resultImage.width] =  (hue >= 95  && hue <= 139) ? color(255) : color(0);
+             float hue = hue(c);
+             //95 139
+              resultImage.pixels[i + j * resultImage.width] =  (hue >= hueMin  && hue <= hueMax) ? color(255) : color(0);
           }
       }
    }
@@ -93,12 +109,15 @@
    
    for(int i=0; i < image.width; ++i) {
       for(int j=0; j < image.height; ++j) {
-          if(brightness(image.pixels[i + j*image.width]) < 25 || saturation(image.pixels[i + j*image.width]) < 80) {
+        
+        color c = image.pixels[i + j*image.width];
+        
+          if(brightness(c) < brightnessThreshold || saturation(c) < saturationThreshold) {
              image.pixels[i + j * image.width] =  color(0);
           }
           else {
-             float hue = hue(image.pixels[i + j*image.width]);
-              image.pixels[i + j * image.width] =  (hue >= 95  && hue <= 139) ? color(255) : color(0);
+             float hue = hue(c);
+              image.pixels[i + j * image.width] =  (hue >= hueMin  && hue <= hueMax) ? color(255) : color(0);
           }
       }
    }
@@ -299,4 +318,5 @@
       }
     }
   return resultImage;
+}
 }

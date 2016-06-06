@@ -78,10 +78,6 @@ void setup(){
   imgproc = new ImageProcessing();
   String []args = {"Image processing window"};
   PApplet.runSketch(args, imgproc);
-  //...
-  
-  // where getRotation could be a getter
-  //for the rotation angles you computed previously
 }
 
 
@@ -116,9 +112,9 @@ void draw() {
   background(151, 185, 255);
        gameRender();
        
-       scrollBar.update();
+       //scrollBar.update();
        image(gameGraphics, 0, 0);
-       guiRender(0, height - guiHeight);
+       //guiRender(0, height - guiHeight);
 }
  //<>//
 void gameRender() {
