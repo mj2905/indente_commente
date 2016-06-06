@@ -3,6 +3,7 @@
 
 class ImageProcessing extends PApplet {
   Capture cam;
+  Movie movieCam;
 
   TwoDThreeD d2d3;
   PVector rotations= new PVector(0,0,0);
@@ -13,10 +14,30 @@ class ImageProcessing extends PApplet {
   
   PGraphics imgEdgeDetector;
   
+  private boolean playing = true;
+  
+    void keyPressed() {
+    if(key == 'q') {println("saturation " + saturationThreshold); saturationThreshold++;}
+    if(key == 'a') {println("saturation " + saturationThreshold); saturationThreshold--;}
+    if(key == 'w') {println("brightness " + brightnessThreshold); brightnessThreshold++;}
+    if(key == 's') {println("brightness " + brightnessThreshold); brightnessThreshold--;}
+    if(keyCode == UP) {println("hueMax " + hueMax); hueMax++;}
+    if(keyCode == DOWN) {println("hueMax " + hueMax); hueMax--;}
+    if(keyCode == RIGHT) {println("hueMin " + hueMin); hueMin++;}
+    if(keyCode == LEFT) {println("hueMin " + hueMin); hueMin--;}
+    if(key == 'd') {println("THRESHOLD " + THRESHOLD); THRESHOLD--;}
+    if(key == 'e') {println("THRESHOLD " + THRESHOLD); THRESHOLD++;}
+    if(key == 'f') {println("Min_Area " + minArea); minArea--;}
+    if(key == 'r') {println("Min_Area " + minArea); minArea++;}
+    if(key == 'g') {println("maxArea " + maxArea); maxArea--;}
+    if(key == 't') {println("maxArea " + maxArea); maxArea++;}
+    if(key == 'p') {if(playing) {playing = false; movieCam.pause();} else {playing = true; movieCam.play();}}
+  }
+  
   private int brightnessThreshold = 20;
   private int saturationThreshold = 100;
   private int hueMin = 75;
-  private int hueMax = 140;
+  private int hueMax = 133;
   private int minArea = 0;
   private int maxArea = 10000000;
   
@@ -29,28 +50,31 @@ class ImageProcessing extends PApplet {
   }
   
     void setup() {
-   //img= createGraphics(800,600);
-   //img = loadImage("C:\\Users\\Thomas\\workspace\\InfoVisu\\indente_commente\\Game\\board3.jpg");
-   imgEdgeDetector = createGraphics(800,600);
-   //noLoop();
+
    d2d3 = new TwoDThreeD(800, 600);
-   String[] cameras = Capture.list();
-   cam = new Capture(this, cameras[1]);
-   cam.start();
+   
+   movieCam = new Movie(this, "C:/Users/Marc/Documents/VisualProgramming/indente_commente/Game/data/testvideo.mp4");
+   movieCam.loop();
+   
+   //String[] cameras = Capture.list();
+   //cam = new Capture(this, cameras[0]);
+   //cam.start();
   }
   
   void draw() {
-      if (cam.available()) {
+      if (movieCam.available() || !playing) {
          background(0);
-         cam.read();
-         img=cam.get();
+         if(playing) {
+           movieCam.read();
+         }
+         img=movieCam;
           
          imgEdgeDetector = createGraphics(800,600); 
           
          result = sobel(filterBinaryMutable(gaussianConvolute(thresholdBrightnessSaturationHue(img)), THRESHOLD));
          
          QuadGraph graph = new QuadGraph();
-         HoughCorner hough = new HoughCorner(result, 200, 4, 10);
+         HoughCorner hough = new HoughCorner(result, 170, 6, 10);
          
          List<PVector> lines = hough.getBestEdges();
          

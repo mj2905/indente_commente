@@ -1,3 +1,5 @@
+import processing.video.*; //<>//
+
 import java.util.List;
 
 
@@ -116,7 +118,7 @@ void draw() {
        image(gameGraphics, 0, 0);
        //guiRender(0, height - guiHeight);
 }
- //<>//
+
 void gameRender() {
    gameGraphics.beginDraw();
        gameGraphics.clear();

@@ -99,7 +99,7 @@ class QuadGraph {
       if(area > biggestAreaFound) {
         if(isConvex(i0, i1, i2, i3)
           && validArea(i0, i1, i2, i3, max_area, min_area)
-          && nonFlatQuad(i0, i1, i2, i3)
+          //&& nonFlatQuad(i0, i1, i2, i3)
           ){
           linesFromBestCycles.clear();
           linesFromBestCycles.add(l0);
@@ -109,6 +109,7 @@ class QuadGraph {
           biggestAreaFound = area; 
         }
       }
+      
     }
     
     return linesFromBestCycles;
@@ -318,7 +319,7 @@ class QuadGraph {
       || (i1<0 && i2<0 && i3<0 && i4<0))
       return true;
     else 
-    //System.out.println("Eliminating non-convex quad");
+    System.out.println("Eliminating non-convex quad");
     return false;
   }
 
@@ -342,7 +343,7 @@ class QuadGraph {
 
     boolean valid = (area < max_area && area > min_area);
 
-    //if (!valid) System.out.println("Area out of range");
+    if (!valid) System.out.println("Area out of range");
 
     return valid;
   }
@@ -383,7 +384,7 @@ class QuadGraph {
     if (cos1 < min_cos && cos2 < min_cos && cos3 < min_cos && cos4 < min_cos)
       return true;
     else {
-      //System.out.println("Flat quad");
+      System.out.println("Flat quad");
       return false;
     }
   }
@@ -416,19 +417,3 @@ class QuadGraph {
     return quad;
   }
 }
-
-/*class CWComparator implements Comparator<PVector> {
-
-  PVector center;
-
-  public CWComparator(PVector center) {
-    this.center = center;
-  }
-
-  @Override
-    public int compare(PVector b, PVector d) {
-    if (Math.atan2(b.y-center.y, b.x-center.x)<Math.atan2(d.y-center.y, d.x-center.x))      
-      return -1; 
-    else return 1;
-  }
-}*/
