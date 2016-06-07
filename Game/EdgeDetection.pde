@@ -10,11 +10,12 @@ class ImageProcessing extends PApplet {
   
   private PImage img;
   private PImage result;
-  private int THRESHOLD = 185; //165
+  private int THRESHOLD = 130; //165
   
   PGraphics imgEdgeDetector;
   
   private boolean playing = true;
+  private boolean pauseWhenPossible = false;
   
     void keyPressed() {
     if(key == 'q') {println("saturation " + saturationThreshold); saturationThreshold++;}
@@ -32,13 +33,15 @@ class ImageProcessing extends PApplet {
     if(key == 'g') {println("maxArea " + maxArea); maxArea--;}
     if(key == 't') {println("maxArea " + maxArea); maxArea++;}
     if(key == 'p') {if(playing) {playing = false; movieCam.pause();} else {playing = true; movieCam.play();}}
+    if(key == 'n') {pauseWhenPossible = !pauseWhenPossible;}
   }
   
-  private int brightnessThreshold = 20;
-  private int saturationThreshold = 100;
+  
+  private int brightnessThreshold = 50;
+  private int saturationThreshold = 70;
   private int hueMin = 75;
-  private int hueMax = 133;
-  private int minArea = 0;
+  private int hueMax = 127;
+  private int minArea = 100;
   private int maxArea = 10000000;
   
   PVector getRotation() {
@@ -75,7 +78,7 @@ class ImageProcessing extends PApplet {
          result = sobel(filterBinaryMutable(gaussianConvolute(thresholdBrightnessSaturationHue(img)), THRESHOLD));
          
          QuadGraph graph = new QuadGraph();
-         HoughCorner hough = new HoughCorner(result, 170, 6, 10);
+         HoughCorner hough = new HoughCorner(result, 180, 7, 20);
          
          List<PVector> lines = hough.getBestEdges();
          
@@ -92,13 +95,20 @@ class ImageProcessing extends PApplet {
            hough.drawIntersections(imgEdgeDetector, intersections);
            if (intersections.size()>= 4) {
              rotations = d2d3.get3DRotations(intersections);
-             println("rx : " + degrees(rotations.x) + " ry : " + degrees(rotations.y) + " rz : " + degrees(rotations.z));
+             //println("rx : " + degrees(rotations.x) + " ry : " + degrees(rotations.y) + " rz : " + degrees(rotations.z));
+           }
+           else {
+            //playing = false; movieCam.pause();
            }
          imgEdgeDetector.endDraw();
           
          image(imgEdgeDetector, 0, 0, 400, 300);
          image(hough.getHough(), 400, 0, 400, 300);
          image(result, 800, 0, 400, 300);
+         
+         if(pauseWhenPossible) {
+           playing = false; movieCam.pause();
+         }
       }
     }
 
@@ -265,11 +275,11 @@ class ImageProcessing extends PApplet {
   }
   
   int maskValueSumH(int i, int j, float weight, PImage image) {
-          return color((int)(brightness(image.pixels[i + (j-1) * image.width]) - brightness(image.pixels[i + (j+1) * image.width]))/weight);
+          return color((int)((brightness(image.pixels[i + (j-1) * image.width]) - brightness(image.pixels[i + (j+1) * image.width]))/weight));
   }
   
   int maskValueSumV(int i, int j, float weight, PImage image) {
-          return color((int)(brightness(image.pixels[i-1 + j * image.width]) - brightness(image.pixels[i+1 + j * image.width]))/weight);
+          return color((int)((brightness(image.pixels[i-1 + j * image.width]) - brightness(image.pixels[i+1 + j * image.width]))/weight));
   }
   
   int maskValue(int i, int j, float[][] mask, float weight, PImage image) {
@@ -313,8 +323,11 @@ class ImageProcessing extends PApplet {
       for (int x = 2; x < image.width - 2; x++) {
         // Skip left and right
         
-        sumh = maskValue(x,y, hKernel,1, image);
-        sumv = maskValue(x,y, vKernel, 1, image);
+        //sumh = maskValue(x,y, hKernel,1, image);
+        //sumv = maskValue(x,y, vKernel, 1, image);
+        
+        sumh = maskValueSumH(x,y,1,image);
+        sumv = maskValueSumV(x,y,1,image);
         
         sum = (int)(sqrt(pow(brightness(sumh),2) + pow(brightness(sumv),2)));
         //sum = (int)(sqrt(pow(sumh,2) + pow(sumv ,2)));
