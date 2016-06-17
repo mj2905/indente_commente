@@ -4,7 +4,7 @@
 class ImageProcessing extends PApplet {
 
   //Modify the path here :
-  private Movie movieCam = new Movie(this, "C:/Users/Marc/Documents/VisualProgramming/indente_commente/Game/data/testvideo.mp4");
+  private Movie movieCam = new Movie(this, "C:/Users/Marc/Documents/VisualProgramming/indente_commente/TangibleGame/data/testvideo.mp4");
 
   TwoDThreeD d2d3;
   PVector rotations= new PVector(0,0,0);

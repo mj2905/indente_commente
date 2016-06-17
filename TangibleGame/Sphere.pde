@@ -51,7 +51,7 @@ public class Sphere {
       }
     
       if(collision) {
-         Game.addToScore(speed.mag());   
+         TangibleGame.addToScore(speed.mag());   
       }
   }
   
@@ -145,7 +145,7 @@ public class Sphere {
      }
      
      if(collisionX || collisionZ) {
-       Game.addToScore(-oldSpeed.mag());
+       TangibleGame.addToScore(-oldSpeed.mag());
      }
   }
       
