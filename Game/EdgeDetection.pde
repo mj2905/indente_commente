@@ -2,8 +2,9 @@
   import java.util.*;
 
 class ImageProcessing extends PApplet {
-  Capture cam;
-  Movie movieCam;
+
+  //Modify the path here :
+  private Movie movieCam = new Movie(this, "C:/Users/Marc/Documents/VisualProgramming/indente_commente/Game/data/testvideo.mp4");
 
   TwoDThreeD d2d3;
   PVector rotations= new PVector(0,0,0);
@@ -14,9 +15,16 @@ class ImageProcessing extends PApplet {
   
   PGraphics imgEdgeDetector;
   
-  private boolean playing = true;
-  private boolean pauseWhenPossible = false;
+  private boolean pause = false;
   
+  public void setPause(boolean pause) {
+     this.pause = pause; 
+  }
+  
+  //private boolean playing = true;
+  //private boolean pauseWhenPossible = false;
+  
+  /*
     void keyPressed() {
     if(key == 'q') {println("saturation " + saturationThreshold); saturationThreshold++;}
     if(key == 'a') {println("saturation " + saturationThreshold); saturationThreshold--;}
@@ -35,7 +43,7 @@ class ImageProcessing extends PApplet {
     if(key == 'p') {if(playing) {playing = false; movieCam.pause();} else {playing = true; movieCam.play();}}
     if(key == 'n') {pauseWhenPossible = !pauseWhenPossible;}
   }
-  
+  */
   
   private int brightnessThreshold = 50;
   private int saturationThreshold = 70;
@@ -49,15 +57,20 @@ class ImageProcessing extends PApplet {
   }
   
   void settings() { 
-    size(1200,300);
+    size(200,150);
   }
   
-    void setup() {
-
-   d2d3 = new TwoDThreeD(800, 600);
+  void setup() {
+    
+   surface.setAlwaysOnTop(true);
+   surface.setLocation(0,0);
+   surface.setResizable(false);
    
-   movieCam = new Movie(this, "C:/Users/Marc/Documents/VisualProgramming/indente_commente/Game/data/testvideo.mp4");
+   d2d3 = new TwoDThreeD(800, 600);
+
    movieCam.loop();
+   
+   imgEdgeDetector = createGraphics(800,600);
    
    //String[] cameras = Capture.list();
    //cam = new Capture(this, cameras[0]);
@@ -65,15 +78,22 @@ class ImageProcessing extends PApplet {
   }
   
   void draw() {
-      if (movieCam.available() || !playing) {
+      if(!pause) {
+        imgproc.update();
+      }
+      image(imgEdgeDetector, 0, 0, width, height);
+    }
+
+  void update() {
+      if (movieCam.available()){ //|| !playing) {
          background(0);
-         if(playing) {
+         //if(playing) {
            movieCam.read();
-         }
+         //}
          img=movieCam;
          //img = loadImage("C:/Users/Marc/Documents/VisualProgramming/indente_commente/Game/board4.jpg"); 
           
-         imgEdgeDetector = createGraphics(800,600); 
+         imgEdgeDetector = createGraphics(img.width,img.height); 
           
          result = sobel(filterBinaryMutable(gaussianConvolute(thresholdBrightnessSaturationHue(img)), THRESHOLD));
          
@@ -87,6 +107,8 @@ class ImageProcessing extends PApplet {
          List<PVector> edgesToPrint = new ArrayList(graph.bestCycles(lines, maxArea, minArea));
          
          imgEdgeDetector.beginDraw();
+           imgEdgeDetector.clear();
+         
            imgEdgeDetector.image(img, 0, 0);
            hough.drawEdges(imgEdgeDetector, edgesToPrint);
            
@@ -102,17 +124,14 @@ class ImageProcessing extends PApplet {
            }
          imgEdgeDetector.endDraw();
           
-         image(imgEdgeDetector, 0, 0, 400, 300);
-         image(hough.getHough(), 400, 0, 400, 300);
-         image(result, 800, 0, 400, 300);
+         //image(hough.getHough(), 400, 0, 400, 300);
+         //image(result, 800, 0, 400, 300);
          
-         if(pauseWhenPossible) {
-           playing = false; movieCam.pause();
-         }
-      }
-    }
-
-  
+         //if(pauseWhenPossible) {
+         //  playing = false; movieCam.pause();
+         //}
+      } 
+  }
   
   
 

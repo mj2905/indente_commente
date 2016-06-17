@@ -1,4 +1,4 @@
-import processing.video.*; //<>//
+import processing.video.*; //<>// //<>//
 
 import java.util.List;
 
@@ -44,6 +44,7 @@ private ImageProcessing imgproc;
 
 void settings() {
  size(800,600,P3D);
+ //fullScreen(P3D);
 }
 
 
@@ -61,6 +62,8 @@ void GUIandGameGraphics(){
 
 void setup(){
   
+  surface.setResizable(false);
+  
   //frameRate(100);
   guiHeight = height/4;
   
@@ -75,7 +78,6 @@ void setup(){
   
   ScoreBarChartAndThumbDraw(barWidth);
   plateAndScrollBarCreator(SIZE_X_Z,  barWidth);
-  
   
   imgproc = new ImageProcessing();
   String []args = {"Image processing window"};
@@ -114,9 +116,9 @@ void draw() {
   background(151, 185, 255);
        gameRender();
        
-       //scrollBar.update();
+       scrollBar.update();
        image(gameGraphics, 0, 0);
-       //guiRender(0, height - guiHeight);
+       guiRender(0, height - guiHeight);
 }
 
 void gameRender() {
@@ -125,12 +127,14 @@ void gameRender() {
        
        if (keyPressed && keyCode == SHIFT) {
           plate.upMode(gameGraphics);
+          imgproc.setPause(true);
         }
         else {
       // changes to the camera in order to see better what we are doing when angleX>0 
         PVector rot = imgproc.getRotation();
         plate.setRot(rot);
         plate.normalMode(gameGraphics);
+        imgproc.setPause(false);
         }
        
        gameGraphics.translate(gameGraphics.width/2, gameGraphics.height/2, DEPTH);
