@@ -2,6 +2,9 @@ import processing.video.*; //<>// //<>//
 
 import java.util.List;
 
+//------------------
+//To modify the path of the video, go in EdgeDetection
+//------------------
 
 //Size of the plate
 private final int SIZE_Y = 20;
@@ -63,6 +66,7 @@ void GUIandGameGraphics(){
 void setup(){
   
   surface.setResizable(false);
+  surface.setLocation(0,0);
   
   //frameRate(100);
   guiHeight = height/4;

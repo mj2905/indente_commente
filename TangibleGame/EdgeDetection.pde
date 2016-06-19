@@ -57,7 +57,7 @@ class ImageProcessing extends PApplet {
   }
   
   void settings() { 
-    size(200,150);
+    size(250,187);
   }
   
   void setup() {
